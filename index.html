@@ -107,6 +107,7 @@
     <strong>結論:</strong> 同じ成功デモ clean50・同じ学習予算（step=10000 · effbs=4）でも
     <span class="ok">FullLoRA だけ 8%</span>。VisAct / Full FT は 0%。
     Full FT は近傍到達（near）は 50/50 だが <strong>grasp は 0/50</strong> → 失敗デモ学習ではなく掴み以降が破綻。
+    デモ vs ポリシー診断図 → <a href="smoke/index.html">clean50_smoke</a>。
   </div>
 
   <h2>結果サマリ</h2>
@@ -179,6 +180,7 @@
     <strong>Full FT（s10000 · effbs4 · 2026-09-26）:</strong>
     LoRA と同じ学習予算・同じ成功デモでも成功率は <strong>0%</strong>。
     near=50/50 · grasp/lift/transport/place=0 → データの成否ではなく Full FT 側（レシピ / 制御 / 過適応など）を疑う。
+    診断図: <a href="smoke/index.html">Full FT vs FullLoRA smoke</a>。
   </div>
 
   <h2>条件別・動画</h2>
@@ -247,6 +249,7 @@
       <tr><th>ckpt</th><td><code>…/libero_init_sawyer_obj0_fullft_s10000_clean50_effbs4/10000</code></td></tr>
       <tr><th>eval_log</th><td><code>logs/clean50_libero/eval_clean50_libero_fullft_s10000_effbs4_max1200.log</code></td></tr>
       <tr><th>data</th><td>VisAct/FullLoRA と同じ open-loop 成功50本</td></tr>
+      <tr><th>smoke</th><td><a href="smoke/index.html">デモ vs ポリシー比較図</a></td></tr>
     </tbody></table>
     <div class="grid">
       <div class="clip"><video controls preload="metadata" src="videos/fullft/rollout_sawyer_task0_ep0.mp4"></video><div class="cap">ep0 · near まで（grasp 失敗）</div></div>
