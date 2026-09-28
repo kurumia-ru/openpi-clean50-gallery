@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>clean50 — noise=0 ×50 · FullLoRA / VisAct / Full FT</title>
+  <style>
+    :root {
+      --bg: #eef2f0;
+      --ink: #1b1f1c;
+      --muted: #5c6560;
+      --line: #c9d2cc;
+      --card: #fbfcfb;
+      --ok: #0b6b45;
+      --bad: #9b1c1c;
+      --warn: #8a4b08;
+      --accent: #1f4d3a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Noto Sans JP", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 380px at 0% -10%, #d5e6dc 0%, transparent 55%),
+        radial-gradient(700px 320px at 100% 0%, #e7e0d4 0%, transparent 50%),
+        var(--bg);
+      line-height: 1.45;
+    }
+    main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    h1 { font-size: 1.65rem; margin: 0 0 0.35rem; letter-spacing: -0.02em; }
+    h2 { font-size: 1.12rem; margin: 2rem 0 0.7rem; }
+    h3 { margin: 0; font-size: 1.02rem; }
+    p.lead { color: var(--muted); margin: 0 0 1rem; max-width: 48rem; }
+    .note {
+      border-left: 3px solid var(--warn);
+      background: #fff6e8;
+      padding: 0.75rem 1rem;
+      margin: 1rem 0 1.25rem;
+      color: #5a3b12;
+    }
+    .note.bad {
+      border-left-color: var(--bad);
+      background: #fff1f1;
+      color: #5c1818;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border: 1px solid var(--line);
+      font-size: 0.88rem;
+      margin-bottom: 0.85rem;
+    }
+    th, td { padding: 0.5rem 0.55rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #e5ebe7; font-weight: 600; }
+    table.mini th { width: 9.5rem; }
+    .ok { color: var(--ok); font-weight: 700; }
+    .bad { color: var(--bad); font-weight: 700; }
+    .run {
+      margin: 1.1rem 0;
+      padding: 1rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+    .run-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.45rem;
+    }
+    .sr-badge {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+    .meta { color: var(--muted); font-size: 0.84rem; margin: 0 0 0.7rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 0.7rem;
+      margin-top: 0.75rem;
+    }
+    .clip {
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 0.35rem;
+    }
+    .clip video { width: 100%; display: block; background: #111; aspect-ratio: 16/10; }
+    .clip .cap { font-size: 0.76rem; margin-top: 0.3rem; color: var(--muted); }
+    code { font-size: 0.78rem; word-break: break-all; }
+    footer { margin-top: 2rem; color: var(--muted); font-size: 0.82rem; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>clean50 — noise=0 デモ×50</h1>
+  <p class="lead">
+    Sawyer Task0（alphabet soup → basket）。approach_noise=0 の scripted OSC v8 デモ50本で、
+    pi05_libero init の FullLoRA / VisAct / Full FT を比較。評価は共通で max_steps=1200 × 50 trials（seed=7）。
+    生成: 2026-09-20 · Full FT 修正再run 反映: 2026-09-26
+  </p>
+
+  <div class="note">
+    <strong>結論:</strong> 同じ clean50 データでも <span class="ok">FullLoRA だけ 8%</span>。
+    VisAct / Full FT（設定修正後も）は 0%。Full FT の BS/steps 修正で <strong>near は 23→50/50</strong> まで直ったが、
+    <strong>grasp は 0/50</strong> のまま → 設定ミスは一部効いたが、掴み以降は別問題。
+  </div>
+
+  <h2>結果サマリ</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>条件</th><th>成功率</th>
+        <th>near</th><th>grasp</th><th>lift</th><th>transport</th><th>place</th>
+        <th>メモ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>libero FullLoRA clean50</td>
+        <td class="ok">8.0% (4/50)</td>
+        <td>50/50</td><td>18/50</td><td>18/50</td><td>18/50</td><td>7/50</td>
+        <td>旧 noise あり scripted FullLoRA は 0%</td>
+      </tr>
+      <tr>
+        <td>libero VisAct clean50</td>
+        <td class="bad">0.0% (0/50)</td>
+        <td>40/50</td><td>7/50</td><td>5/50</td><td>5/50</td><td>1/50</td>
+        <td>place 手前でほぼ終了</td>
+      </tr>
+      <tr>
+        <td>libero Full FT clean50（修正: s10000 effbs4）</td>
+        <td class="bad">0.0% (0/50)</td>
+        <td>50/50</td><td>0/50</td><td>0/50</td><td>0/50</td><td>0/50</td>
+        <td>接近は全成功・掴みが全滅</td>
+      </tr>
+      <tr>
+        <td>libero Full FT clean50（旧誤設定: s5000 BS実効2）</td>
+        <td class="bad">0.0% (0/50)</td>
+        <td>23/50</td><td>4/50</td><td>4/50</td><td>3/50</td><td>0/50</td>
+        <td>参考・残置</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>共通条件</h2>
+  <table class="mini"><tbody>
+    <tr><th>robot / task</th><td>sawyer · libero_object task0</td></tr>
+    <tr><th>data</th><td><code>libero_sawyer_scripted_obj0_osc_v8_clean50</code>（share7）</td></tr>
+    <tr><th>demos</th><td>50 ep · approach_noise=0 · compact · ik_set · home_w30 · delta_osc · 20 Hz</td></tr>
+    <tr><th>init</th><td>pi05_libero_pytorch</td></tr>
+    <tr><th>config name</th><td><code>pi05_lora_b_object_sawyer</code>（見た目は LoRA 名だが freeze_filter=Nothing）</td></tr>
+    <tr><th>eval</th><td>seed=7 · 50 trials · max_steps=1200 · env_horizon=1260 · port 別</td></tr>
+    <tr><th>storage</th><td>data / ckpt / log / video → /share7/yui.muranaka/openpi_appearance</td></tr>
+  </tbody></table>
+
+  <h2>条件別の学習設定</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>項目</th><th>FullLoRA</th><th>VisAct</th><th>Full FT</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>script</td><td><code>train_pytorch_lora.py</code></td><td><code>train_pytorch_lora_vision_action.py</code></td><td><code>train_pytorch.py</code></td></tr>
+      <tr><td>steps</td><td>10000</td><td>10000</td><td>10000（旧誤設定は 5000）</td></tr>
+      <tr><td>batch / GPU</td><td>4 × 1 GPU</td><td>4 × 1 GPU</td><td>2 × 2 GPU（旧誤設定は 2 × 1）</td></tr>
+      <tr><td>effective BS</td><td>4</td><td>4</td><td>4（旧誤設定は 2）</td></tr>
+      <tr><td>lr</td><td>peak 5e-5</td><td>peak 5e-5</td><td>peak 5e-5</td></tr>
+      <tr><td>merge</td><td>merge_lora_checkpoint.py</td><td>merge_lora_checkpoint_vision_action.py</td><td>不要（素の PI0 重みを直接 serve）</td></tr>
+      <tr><td>exp</td><td>…fulllora_s10000_…clean50</td><td>…visact_s10000_…clean50</td><td>…fullft_s10000_clean50_effbs4</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note bad">
+    <strong>Full FT 修正再run 結果（2026-09-26 完了）:</strong>
+    BS/steps を LoRA 相当に揃えたが成功率はなお <strong>0%</strong>。
+    near_grasp は <strong>50/50</strong>（旧誤設定 23/50）まで改善 → 設定ミスは接近に効いた。
+    一方 grasp/lift/transport/place はすべて 0 → 掴み以降は設定以外（Full FT レシピ / Sawyer 制御 / データ）の線が強い。
+  </div>
+
+  <h2>条件別・動画</h2>
+
+  <section class="run" id="fulllora">
+    <div class="run-head">
+      <h3>libero FullLoRA clean50</h3>
+      <div class="sr-badge ok">8.0%</div>
+    </div>
+    <p class="meta">成功率 <strong class="ok">8.0%</strong>（4/50） · init=pi05_libero · Full LoRA · DAggerなし · steps=10000 · bs=4</p>
+    <table class="mini"><tbody>
+      <tr><th>ckpt</th><td><code>…_merged_…fulllora_s10000_scripted_obj0_osc_v8_clean50</code></td></tr>
+      <tr><th>eval_log</th><td><code>logs/clean50_libero/eval_clean50_libero_fulllora_max1200.log</code></td></tr>
+    </tbody></table>
+    <div class="grid">
+      <div class="clip"><video controls preload="metadata" src="videos/fulllora/rollout_sawyer_task0_ep30.mp4"></video><div class="cap">ep30 · success · lift=0.167m · min_eef=0.002m</div></div>
+      <div class="clip"><video controls preload="metadata" src="videos/fulllora/rollout_sawyer_task0_ep44.mp4"></video><div class="cap">ep44 · success · lift=0.147m · min_eef=0.001m</div></div>
+      <div class="clip"><video controls preload="metadata" src="videos/fulllora/rollout_sawyer_task0_ep21.mp4"></video><div class="cap">ep21 · success · lift=0.147m · min_eef=0.006m</div></div>
+      <div class="clip"><video controls preload="metadata" src="videos/fulllora/rollout_sawyer_task0_ep14.mp4"></video><div class="cap">ep14 · transport（成功手前） · lift=0.144m</div></div>
+    </div>
+  </section>
+
+  <section class="run" id="visact">
+    <div class="run-head">
+      <h3>libero VisAct clean50</h3>
+      <div class="sr-badge bad">0.0%</div>
+    </div>
+    <p class="meta">成功率 <strong class="bad">0.0%</strong>（0/50） · init=pi05_libero · VisAct LoRA · DAggerなし · steps=10000 · bs=4</p>
+    <table class="mini"><tbody>
+      <tr><th>ckpt</th><td><code>…_merged_…visact_s10000_scripted_obj0_osc_v8_clean50</code></td></tr>
+      <tr><th>eval_log</th><td><code>logs/clean50_libero/eval_clean50_libero_visact_max1200.log</code></td></tr>
+    </tbody></table>
+    <div class="grid">
+      <div class="clip"><video controls preload="metadata" src="videos/visact/rollout_sawyer_task0_ep27.mp4"></video><div class="cap">ep27 · place まで · lift=0.143m（成功ならず）</div></div>
+      <div class="clip"><video controls preload="metadata" src="videos/visact/rollout_sawyer_task0_ep32.mp4"></video><div class="cap">ep32 · transport · lift=0.149m</div></div>
+      <div class="clip"><video controls preload="metadata" src="videos/visact/rollout_sawyer_task0_ep46.mp4"></video><div class="cap">ep46 · transport · lift=0.131m</div></div>
+      <div class="clip"><video controls preload="metadata" src="videos/visact/rollout_sawyer_task0_ep35.mp4"></video><div class="cap">ep35 · transport · lift=0.110m</div></div>
+    </div>
+  </section>
+
+  <section class="run" id="fullft">
+    <div class="run-head">
+      <h3>libero Full FT clean50（修正: s10000 · effbs4）</h3>
+      <div class="sr-badge bad">0.0%</div>
+    </div>
+    <p class="meta">成功率 <strong class="bad">0.0%</strong>（0/50） · init=pi05_libero · Full FT · steps=10000 · NPROC=2×BS=2 · 完了 2026-09-26</p>
+    <table class="mini"><tbody>
+      <tr><th>ckpt</th><td><code>…/libero_init_sawyer_obj0_fullft_s10000_clean50_effbs4/10000</code></td></tr>
+      <tr><th>eval_log</th><td><code>logs/clean50_libero/eval_clean50_libero_fullft_s10000_effbs4_max1200.log</code></td></tr>
+      <tr><th>挙動</th><td>near=50/50 · grasp=0/50 · 接近はできるが掴めない</td></tr>
+    </tbody></table>
+    <div class="grid">
+      <div class="clip"><video controls preload="metadata" src="videos/fullft/rollout_sawyer_task0_ep0.mp4"></video><div class="cap">ep0 · near まで（grasp 失敗）</div></div>
+      <div class="clip"><video controls preload="metadata" src="videos/fullft/rollout_sawyer_task0_ep10.mp4"></video><div class="cap">ep10 · near まで（grasp 失敗）</div></div>
+      <div class="clip"><video controls preload="metadata" src="videos/fullft/rollout_sawyer_task0_ep25.mp4"></video><div class="cap">ep25 · near まで（grasp 失敗）</div></div>
+      <div class="clip"><video controls preload="metadata" src="videos/fullft/rollout_sawyer_task0_ep40.mp4"></video><div class="cap">ep40 · near まで（grasp 失敗）</div></div>
+    </div>
+  </section>
+
+  <footer>
+    Desktop: <code>clean50_gallery/index.html</code> ·
+    repo: <code>docs/clean50_gallery/</code> ·
+    動画元: <code>/share7/.../videos/clean50_libero_*_max1200</code>
+  </footer>
+</main>
+</body>
+</html>
