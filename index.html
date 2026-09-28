@@ -98,15 +98,15 @@
 <main>
   <h1>clean50 — noise=0 デモ×50</h1>
   <p class="lead">
-    Sawyer Task0（alphabet soup → basket）。approach_noise=0 の scripted OSC v8 デモ50本で、
+    Sawyer Task0（alphabet soup → basket）。open-loop 成功のみの scripted OSC v8 デモ50本（noise=0）で、
     pi05_libero init の FullLoRA / VisAct / Full FT を比較。評価は共通で max_steps=1200 × 50 trials（seed=7）。
-    生成: 2026-09-20 · Full FT 修正再run 反映: 2026-09-26
+    生成: 2026-09-20 · 学習予算・成功デモ注記: 2026-09-28
   </p>
 
   <div class="note">
-    <strong>結論:</strong> 同じ clean50 データでも <span class="ok">FullLoRA だけ 8%</span>。
-    VisAct / Full FT（設定修正後も）は 0%。Full FT の BS/steps 修正で <strong>near は 23→50/50</strong> まで直ったが、
-    <strong>grasp は 0/50</strong> のまま → 設定ミスは一部効いたが、掴み以降は別問題。
+    <strong>結論:</strong> 同じ成功デモ clean50・同じ学習予算（step=10000 · effbs=4）でも
+    <span class="ok">FullLoRA だけ 8%</span>。VisAct / Full FT は 0%。
+    Full FT は近傍到達（near）は 50/50 だが <strong>grasp は 0/50</strong> → 失敗デモ学習ではなく掴み以降が破綻。
   </div>
 
   <h2>結果サマリ</h2>
@@ -123,7 +123,7 @@
         <td>libero FullLoRA clean50</td>
         <td class="ok">8.0% (4/50)</td>
         <td>50/50</td><td>18/50</td><td>18/50</td><td>18/50</td><td>7/50</td>
-        <td>旧 noise あり scripted FullLoRA は 0%</td>
+        <td>唯一の非ゼロ</td>
       </tr>
       <tr>
         <td>libero VisAct clean50</td>
@@ -132,16 +132,10 @@
         <td>place 手前でほぼ終了</td>
       </tr>
       <tr>
-        <td>libero Full FT clean50（修正: s10000 effbs4）</td>
+        <td>libero Full FT clean50（s10000 · effbs4）</td>
         <td class="bad">0.0% (0/50)</td>
         <td>50/50</td><td>0/50</td><td>0/50</td><td>0/50</td><td>0/50</td>
-        <td>接近は全成功・掴みが全滅</td>
-      </tr>
-      <tr>
-        <td>libero Full FT clean50（旧誤設定: s5000 BS実効2）</td>
-        <td class="bad">0.0% (0/50)</td>
-        <td>23/50</td><td>4/50</td><td>4/50</td><td>3/50</td><td>0/50</td>
-        <td>参考・残置</td>
+        <td>比較基準 · 接近は全成功・掴みが全滅</td>
       </tr>
     </tbody>
   </table>
@@ -149,15 +143,21 @@
   <h2>共通条件</h2>
   <table class="mini"><tbody>
     <tr><th>robot / task</th><td>sawyer · libero_object task0</td></tr>
-    <tr><th>data</th><td><code>libero_sawyer_scripted_obj0_osc_v8_clean50</code>（share7）</td></tr>
-    <tr><th>demos</th><td>50 ep · approach_noise=0 · compact · ik_set · home_w30 · delta_osc · 20 Hz</td></tr>
+    <tr><th>data</th><td><code>libero_sawyer_scripted_obj0_osc_v8_clean50</code>（share7）· 3条件で同一</td></tr>
+    <tr><th>デモの作り方</th><td>scripted export で <code>--require-open-loop</code> · 120 試行 → open_loop_ok 106本 → 先頭50本</td></tr>
+    <tr><th>デモの成否</th><td>全50本が lifted+placed+passed+open_loop_ok（失敗デモは未使用）· approach_noise=0</td></tr>
+    <tr><th>demos</th><td>50 ep · compact · ik_set · home_w30 · delta_osc · 20 Hz</td></tr>
     <tr><th>init</th><td>pi05_libero_pytorch</td></tr>
-    <tr><th>config name</th><td><code>pi05_lora_b_object_sawyer</code>（見た目は LoRA 名だが freeze_filter=Nothing）</td></tr>
+    <tr><th>config name</th><td><code>pi05_lora_b_object_sawyer</code>（見た目は LoRA 名だが Full FT は freeze_filter=Nothing）</td></tr>
     <tr><th>eval</th><td>seed=7 · 50 trials · max_steps=1200 · env_horizon=1260 · port 別</td></tr>
     <tr><th>storage</th><td>data / ckpt / log / video → /share7/yui.muranaka/openpi_appearance</td></tr>
   </tbody></table>
 
-  <h2>条件別の学習設定</h2>
+  <h2>条件別の学習設定（比較基準）</h2>
+  <p class="lead" style="margin-top:0">
+    step = パラメータ更新回数。effbs（effective batch）= 1GPUあたりの bs × GPU枚数 = 1回の更新で見る本数。
+    3条件とも <strong>step=10000 · effbs=4</strong>（GPU 割り方だけ Full FT が 2×2）。
+  </p>
   <table>
     <thead>
       <tr>
@@ -166,9 +166,9 @@
     </thead>
     <tbody>
       <tr><td>script</td><td><code>train_pytorch_lora.py</code></td><td><code>train_pytorch_lora_vision_action.py</code></td><td><code>train_pytorch.py</code></td></tr>
-      <tr><td>steps</td><td>10000</td><td>10000</td><td>10000（旧誤設定は 5000）</td></tr>
-      <tr><td>batch / GPU</td><td>4 × 1 GPU</td><td>4 × 1 GPU</td><td>2 × 2 GPU（旧誤設定は 2 × 1）</td></tr>
-      <tr><td>effective BS</td><td>4</td><td>4</td><td>4（旧誤設定は 2）</td></tr>
+      <tr><td>steps</td><td>10000</td><td>10000</td><td>10000</td></tr>
+      <tr><td>batch / GPU</td><td>4 × 1 GPU</td><td>4 × 1 GPU</td><td>2 × 2 GPU</td></tr>
+      <tr><td>effective BS</td><td>4</td><td>4</td><td>4</td></tr>
       <tr><td>lr</td><td>peak 5e-5</td><td>peak 5e-5</td><td>peak 5e-5</td></tr>
       <tr><td>merge</td><td>merge_lora_checkpoint.py</td><td>merge_lora_checkpoint_vision_action.py</td><td>不要（素の PI0 重みを直接 serve）</td></tr>
       <tr><td>exp</td><td>…fulllora_s10000_…clean50</td><td>…visact_s10000_…clean50</td><td>…fullft_s10000_clean50_effbs4</td></tr>
@@ -176,10 +176,9 @@
   </table>
 
   <div class="note bad">
-    <strong>Full FT 修正再run 結果（2026-09-26 完了）:</strong>
-    BS/steps を LoRA 相当に揃えたが成功率はなお <strong>0%</strong>。
-    near_grasp は <strong>50/50</strong>（旧誤設定 23/50）まで改善 → 設定ミスは接近に効いた。
-    一方 grasp/lift/transport/place はすべて 0 → 掴み以降は設定以外（Full FT レシピ / Sawyer 制御 / データ）の線が強い。
+    <strong>Full FT（s10000 · effbs4 · 2026-09-26）:</strong>
+    LoRA と同じ学習予算・同じ成功デモでも成功率は <strong>0%</strong>。
+    near=50/50 · grasp/lift/transport/place=0 → データの成否ではなく Full FT 側（レシピ / 制御 / 過適応など）を疑う。
   </div>
 
   <h2>条件別・動画</h2>
@@ -191,6 +190,12 @@
     </div>
     <p class="meta">成功率 <strong class="ok">8.0%</strong>（4/50） · init=pi05_libero · Full LoRA · DAggerなし · steps=10000 · bs=4</p>
     <table class="mini"><tbody>
+      <tr><th>成功率</th><td class="ok">8.0%（4/50）</td></tr>
+      <tr><th>near</th><td>50/50</td></tr>
+      <tr><th>grasp</th><td>18/50</td></tr>
+      <tr><th>lift</th><td>18/50</td></tr>
+      <tr><th>transport</th><td>18/50</td></tr>
+      <tr><th>place</th><td>7/50</td></tr>
       <tr><th>ckpt</th><td><code>…_merged_…fulllora_s10000_scripted_obj0_osc_v8_clean50</code></td></tr>
       <tr><th>eval_log</th><td><code>logs/clean50_libero/eval_clean50_libero_fulllora_max1200.log</code></td></tr>
     </tbody></table>
@@ -209,6 +214,12 @@
     </div>
     <p class="meta">成功率 <strong class="bad">0.0%</strong>（0/50） · init=pi05_libero · VisAct LoRA · DAggerなし · steps=10000 · bs=4</p>
     <table class="mini"><tbody>
+      <tr><th>成功率</th><td class="bad">0.0%（0/50）</td></tr>
+      <tr><th>near</th><td>40/50</td></tr>
+      <tr><th>grasp</th><td>7/50</td></tr>
+      <tr><th>lift</th><td>5/50</td></tr>
+      <tr><th>transport</th><td>5/50</td></tr>
+      <tr><th>place</th><td>1/50</td></tr>
       <tr><th>ckpt</th><td><code>…_merged_…visact_s10000_scripted_obj0_osc_v8_clean50</code></td></tr>
       <tr><th>eval_log</th><td><code>logs/clean50_libero/eval_clean50_libero_visact_max1200.log</code></td></tr>
     </tbody></table>
@@ -222,14 +233,20 @@
 
   <section class="run" id="fullft">
     <div class="run-head">
-      <h3>libero Full FT clean50（修正: s10000 · effbs4）</h3>
+      <h3>libero Full FT clean50（s10000 · effbs4）</h3>
       <div class="sr-badge bad">0.0%</div>
     </div>
-    <p class="meta">成功率 <strong class="bad">0.0%</strong>（0/50） · init=pi05_libero · Full FT · steps=10000 · NPROC=2×BS=2 · 完了 2026-09-26</p>
+    <p class="meta">成功率 <strong class="bad">0.0%</strong>（0/50） · init=pi05_libero · Full FT · steps=10000 · NPROC=2×BS=2（effbs=4）· 成功デモ clean50 · 完了 2026-09-26</p>
     <table class="mini"><tbody>
+      <tr><th>成功率</th><td class="bad">0.0%（0/50）</td></tr>
+      <tr><th>near</th><td>50/50</td></tr>
+      <tr><th>grasp</th><td>0/50</td></tr>
+      <tr><th>lift</th><td>0/50</td></tr>
+      <tr><th>transport</th><td>0/50</td></tr>
+      <tr><th>place</th><td>0/50</td></tr>
       <tr><th>ckpt</th><td><code>…/libero_init_sawyer_obj0_fullft_s10000_clean50_effbs4/10000</code></td></tr>
       <tr><th>eval_log</th><td><code>logs/clean50_libero/eval_clean50_libero_fullft_s10000_effbs4_max1200.log</code></td></tr>
-      <tr><th>挙動</th><td>near=50/50 · grasp=0/50 · 接近はできるが掴めない</td></tr>
+      <tr><th>data</th><td>VisAct/FullLoRA と同じ open-loop 成功50本</td></tr>
     </tbody></table>
     <div class="grid">
       <div class="clip"><video controls preload="metadata" src="videos/fullft/rollout_sawyer_task0_ep0.mp4"></video><div class="cap">ep0 · near まで（grasp 失敗）</div></div>
