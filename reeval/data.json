@@ -1,0 +1,1113 @@
+{
+  "generated_at": "2026-09-16T06:45:19+09:00",
+  "common_eval": {
+    "robot": "sawyer",
+    "task": "libero_object task0 (alphabet soup → basket)",
+    "seed": 7,
+    "num_trials": 50,
+    "max_steps": 1200,
+    "env_horizon": 1260,
+    "home": "home_w30",
+    "control_freq_hz": 20,
+    "action_space": "delta_osc",
+    "gripper_start": "open (task0)",
+    "note": "旧評価は max_steps=280（Frankaスケール）。今回はデモ長〜1044に合わせて1200に修正。"
+  },
+  "runs": [
+    {
+      "id": "fullft_libero_subset50",
+      "label": "libero Full FT (subset50)",
+      "init": "pi05_libero",
+      "method": "Full FT (no LoRA)",
+      "dagger": "none",
+      "data": "scripted OSC v8 subset50 (先頭50本)",
+      "train_steps": 5000,
+      "ckpt": "pi05_lora_b_object_sawyer/libero_init_sawyer_obj0_fullft_s5000_subset50_s7/5000",
+      "repo": "libero_sawyer_scripted_obj0_osc_v8_subset50_s7",
+      "old_eval_note": "旧280: 0%（予算不足で無効）",
+      "status": "done",
+      "summary": {
+        "n": 50,
+        "done": true,
+        "success_rate": 0.0,
+        "success": 0,
+        "near": 5,
+        "grasp": 0,
+        "lift": 0,
+        "transport": 0,
+        "place": 0
+      },
+      "videos": [
+        {
+          "ep": 6,
+          "label": "near",
+          "file": "videos/fullft_libero_subset50/near_ep06.mp4",
+          "min_eef_obj": 0.001,
+          "lift_m": 0.0,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": false,
+            "lift": false,
+            "transport": false,
+            "place": false
+          }
+        },
+        {
+          "ep": 42,
+          "label": "near",
+          "file": "videos/fullft_libero_subset50/near_ep42.mp4",
+          "min_eef_obj": 0.012,
+          "lift_m": 0.0,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": false,
+            "lift": false,
+            "transport": false,
+            "place": false
+          }
+        },
+        {
+          "ep": 25,
+          "label": "near",
+          "file": "videos/fullft_libero_subset50/near_ep25.mp4",
+          "min_eef_obj": 0.021,
+          "lift_m": 0.0,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": false,
+            "lift": false,
+            "transport": false,
+            "place": false
+          }
+        },
+        {
+          "ep": 8,
+          "label": "near",
+          "file": "videos/fullft_libero_subset50/near_ep08.mp4",
+          "min_eef_obj": 0.023,
+          "lift_m": 0.0,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": false,
+            "lift": false,
+            "transport": false,
+            "place": false
+          }
+        }
+      ],
+      "eval_log": "/storage3/tmp/yui.muranaka/openpi_eval/eval_fullft_libero_subset50_max1200.log",
+      "video_dir": "/storage3/tmp/yui.muranaka/openpi_eval/videos_fullft_libero_subset50_max1200",
+      "ckpt_exists": true
+    },
+    {
+      "id": "libero_fulllora_nodagger",
+      "label": "libero FullLoRA scripted (DAggerなし)",
+      "init": "pi05_libero",
+      "method": "Full LoRA",
+      "dagger": "none",
+      "data": "scripted OSC v8 (871 ep)",
+      "train_steps": 10000,
+      "ckpt": "pi05_lora_b_object_sawyer_merged_libero_init_sawyer_obj0_fulllora_s10000_scripted_obj0_osc_v8",
+      "repo": "libero_sawyer_scripted_obj0_osc_v8",
+      "old_eval_note": "旧280: 0%",
+      "status": "done",
+      "summary": {
+        "n": 50,
+        "done": true,
+        "success_rate": 0.0,
+        "success": 0,
+        "near": 40,
+        "grasp": 14,
+        "lift": 13,
+        "transport": 10,
+        "place": 0
+      },
+      "videos": [
+        {
+          "ep": 38,
+          "label": "transport",
+          "file": "videos/libero_fulllora_nodagger/transport_ep38.mp4",
+          "min_eef_obj": 0.002,
+          "lift_m": 0.146,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": false
+          }
+        },
+        {
+          "ep": 8,
+          "label": "transport",
+          "file": "videos/libero_fulllora_nodagger/transport_ep08.mp4",
+          "min_eef_obj": 0.001,
+          "lift_m": 0.141,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": false
+          }
+        },
+        {
+          "ep": 14,
+          "label": "transport",
+          "file": "videos/libero_fulllora_nodagger/transport_ep14.mp4",
+          "min_eef_obj": 0.001,
+          "lift_m": 0.137,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": false
+          }
+        },
+        {
+          "ep": 45,
+          "label": "transport",
+          "file": "videos/libero_fulllora_nodagger/transport_ep45.mp4",
+          "min_eef_obj": 0.009,
+          "lift_m": 0.133,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": false
+          }
+        }
+      ],
+      "eval_log": "/storage3/tmp/yui.muranaka/openpi_eval/eval_libero_fulllora_nodagger_max1200.log",
+      "video_dir": "/storage3/tmp/yui.muranaka/openpi_eval/videos_libero_fulllora_nodagger_max1200",
+      "ckpt_exists": true
+    },
+    {
+      "id": "libero_fulllora_r1",
+      "label": "libero FullLoRA DAgger r1",
+      "init": "pi05_libero",
+      "method": "Full LoRA",
+      "dagger": "r1",
+      "data": "scripted + DAgger r1",
+      "train_steps": 10000,
+      "ckpt": "pi05_lora_b_object_sawyer_merged_libero_init_sawyer_obj0_fulllora_s10000_dagger_liberoinit_fulllora_r1",
+      "repo": "libero_sawyer_scripted_obj0_osc_v8_dagger_liberoinit_fulllora_r1",
+      "old_eval_note": "旧280: 要参照",
+      "status": "done",
+      "summary": {
+        "n": 50,
+        "done": true,
+        "success_rate": 0.38,
+        "success": 19,
+        "near": 34,
+        "grasp": 22,
+        "lift": 22,
+        "transport": 20,
+        "place": 19
+      },
+      "videos": [
+        {
+          "ep": 17,
+          "label": "success",
+          "file": "videos/libero_fulllora_r1/success_ep17.mp4",
+          "min_eef_obj": 0.005,
+          "lift_m": 0.239,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 29,
+          "label": "success",
+          "file": "videos/libero_fulllora_r1/success_ep29.mp4",
+          "min_eef_obj": 0.007,
+          "lift_m": 0.181,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 39,
+          "label": "place",
+          "file": "videos/libero_fulllora_r1/place_ep39.mp4",
+          "min_eef_obj": 0.002,
+          "lift_m": 0.316,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 12,
+          "label": "lift",
+          "file": "videos/libero_fulllora_r1/lift_ep12.mp4",
+          "min_eef_obj": 0.005,
+          "lift_m": 0.135,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": false,
+            "place": false
+          }
+        }
+      ],
+      "eval_log": "/storage3/tmp/yui.muranaka/openpi_eval/eval_libero_fulllora_r1_max1200.log",
+      "video_dir": "/storage3/tmp/yui.muranaka/openpi_eval/videos_libero_fulllora_r1_max1200",
+      "ckpt_exists": true
+    },
+    {
+      "id": "libero_fulllora_r2",
+      "label": "libero FullLoRA DAgger r2",
+      "init": "pi05_libero",
+      "method": "Full LoRA",
+      "dagger": "r2",
+      "data": "r1 merged + DAgger r2",
+      "train_steps": 10000,
+      "ckpt": "pi05_lora_b_object_sawyer_merged_libero_init_sawyer_obj0_fulllora_s10000_dagger_liberoinit_fulllora_r2",
+      "repo": "libero_sawyer_scripted_obj0_osc_v8_dagger_liberoinit_fulllora_r2",
+      "old_eval_note": "旧280: ~16%",
+      "status": "done",
+      "summary": {
+        "n": 50,
+        "done": true,
+        "success_rate": 0.3,
+        "success": 15,
+        "near": 50,
+        "grasp": 28,
+        "lift": 28,
+        "transport": 20,
+        "place": 19
+      },
+      "videos": [
+        {
+          "ep": 25,
+          "label": "success",
+          "file": "videos/libero_fulllora_r2/success_ep25.mp4",
+          "min_eef_obj": 0.005,
+          "lift_m": 0.309,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 49,
+          "label": "success",
+          "file": "videos/libero_fulllora_r2/success_ep49.mp4",
+          "min_eef_obj": 0.003,
+          "lift_m": 0.287,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 19,
+          "label": "place",
+          "file": "videos/libero_fulllora_r2/place_ep19.mp4",
+          "min_eef_obj": 0.004,
+          "lift_m": 0.313,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 24,
+          "label": "place",
+          "file": "videos/libero_fulllora_r2/place_ep24.mp4",
+          "min_eef_obj": 0.004,
+          "lift_m": 0.276,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        }
+      ],
+      "eval_log": "/storage3/tmp/yui.muranaka/openpi_eval/eval_libero_fulllora_r2_max1200.log",
+      "video_dir": "/storage3/tmp/yui.muranaka/openpi_eval/videos_libero_fulllora_r2_max1200",
+      "ckpt_exists": true
+    },
+    {
+      "id": "base_fulllora_scripted",
+      "label": "base FullLoRA scripted (DAggerなし)",
+      "init": "pi05_base",
+      "method": "Full LoRA",
+      "dagger": "none",
+      "data": "scripted OSC v8 (871 ep)",
+      "train_steps": 10000,
+      "ckpt": "pi05_lora_b_object_sawyer_merged_bs4_10000_scripted_obj0_osc_v8",
+      "repo": "libero_sawyer_scripted_obj0_osc_v8",
+      "old_eval_note": "旧280: 0%",
+      "status": "done",
+      "summary": {
+        "n": 50,
+        "done": true,
+        "success_rate": 0.0,
+        "success": 0,
+        "near": 10,
+        "grasp": 1,
+        "lift": 1,
+        "transport": 0,
+        "place": 0
+      },
+      "videos": [
+        {
+          "ep": 40,
+          "label": "lift",
+          "file": "videos/base_fulllora_scripted/lift_ep40.mp4",
+          "min_eef_obj": 0.001,
+          "lift_m": 0.165,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": false,
+            "place": false
+          }
+        },
+        {
+          "ep": 26,
+          "label": "near",
+          "file": "videos/base_fulllora_scripted/near_ep26.mp4",
+          "min_eef_obj": 0.006,
+          "lift_m": 0.0,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": false,
+            "lift": false,
+            "transport": false,
+            "place": false
+          }
+        },
+        {
+          "ep": 27,
+          "label": "near",
+          "file": "videos/base_fulllora_scripted/near_ep27.mp4",
+          "min_eef_obj": 0.01,
+          "lift_m": 0.0,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": false,
+            "lift": false,
+            "transport": false,
+            "place": false
+          }
+        },
+        {
+          "ep": 30,
+          "label": "near",
+          "file": "videos/base_fulllora_scripted/near_ep30.mp4",
+          "min_eef_obj": 0.012,
+          "lift_m": 0.0,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": false,
+            "lift": false,
+            "transport": false,
+            "place": false
+          }
+        }
+      ],
+      "eval_log": "/storage3/tmp/yui.muranaka/openpi_eval/eval_base_fulllora_scripted_max1200.log",
+      "video_dir": "/storage3/tmp/yui.muranaka/openpi_eval/videos_base_fulllora_scripted_max1200",
+      "ckpt_exists": true
+    },
+    {
+      "id": "hist_closefail_v2",
+      "label": "base FullLoRA closefail_v2（正の対照）",
+      "init": "pi05_base",
+      "method": "Full LoRA",
+      "dagger": "closefail_v2",
+      "data": "scripted + closefail DAgger",
+      "train_steps": 10000,
+      "ckpt": "pi05_lora_b_object_sawyer_merged_bs4_10000_scripted_obj0_osc_v8_dagger_closefail_v2",
+      "repo": "libero_sawyer_scripted_obj0_osc_v8_dagger_closefail_v2",
+      "old_eval_note": "旧280: 28%",
+      "status": "done",
+      "summary": {
+        "n": 50,
+        "done": true,
+        "success_rate": 0.22,
+        "success": 11,
+        "near": 49,
+        "grasp": 20,
+        "lift": 20,
+        "transport": 17,
+        "place": 10
+      },
+      "videos": [
+        {
+          "ep": 37,
+          "label": "success",
+          "file": "videos/hist_closefail_v2/success_ep37.mp4",
+          "min_eef_obj": 0.006,
+          "lift_m": 0.16,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 48,
+          "label": "success",
+          "file": "videos/hist_closefail_v2/success_ep48.mp4",
+          "min_eef_obj": 0.008,
+          "lift_m": 0.16,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 2,
+          "label": "transport",
+          "file": "videos/hist_closefail_v2/transport_ep02.mp4",
+          "min_eef_obj": 0.002,
+          "lift_m": 0.159,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": false
+          }
+        },
+        {
+          "ep": 19,
+          "label": "transport",
+          "file": "videos/hist_closefail_v2/transport_ep19.mp4",
+          "min_eef_obj": 0.003,
+          "lift_m": 0.145,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": false
+          }
+        }
+      ],
+      "eval_log": "/storage3/tmp/yui.muranaka/openpi_eval/eval_hist_closefail_v2_max1200.log",
+      "video_dir": "/storage3/tmp/yui.muranaka/openpi_eval/videos_hist_closefail_v2_max1200",
+      "ckpt_exists": true
+    },
+    {
+      "id": "libero_visact_nodagger",
+      "label": "libero VisAct scripted (DAggerなし)",
+      "init": "pi05_libero",
+      "method": "VisAct LoRA",
+      "dagger": "none",
+      "data": "scripted OSC v8 (871 ep)",
+      "train_steps": 10000,
+      "ckpt": "pi05_lora_b_object_sawyer_merged_libero_init_sawyer_obj0_visact_s10000_scripted_obj0_osc_v8",
+      "repo": "libero_sawyer_scripted_obj0_osc_v8",
+      "old_eval_note": "旧280: 低め",
+      "status": "done",
+      "summary": {
+        "n": 50,
+        "done": true,
+        "success_rate": 0.04,
+        "success": 2,
+        "near": 34,
+        "grasp": 11,
+        "lift": 9,
+        "transport": 8,
+        "place": 4
+      },
+      "videos": [
+        {
+          "ep": 12,
+          "label": "success",
+          "file": "videos/libero_visact_nodagger/success_ep12.mp4",
+          "min_eef_obj": 0.012,
+          "lift_m": 0.147,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 27,
+          "label": "success",
+          "file": "videos/libero_visact_nodagger/success_ep27.mp4",
+          "min_eef_obj": 0.013,
+          "lift_m": 0.144,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 2,
+          "label": "place",
+          "file": "videos/libero_visact_nodagger/place_ep02.mp4",
+          "min_eef_obj": 0.0,
+          "lift_m": 0.175,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 11,
+          "label": "place",
+          "file": "videos/libero_visact_nodagger/place_ep11.mp4",
+          "min_eef_obj": 0.004,
+          "lift_m": 0.171,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        }
+      ],
+      "eval_log": "/storage3/tmp/yui.muranaka/openpi_eval/eval_libero_visact_nodagger_max1200.log",
+      "video_dir": "/storage3/tmp/yui.muranaka/openpi_eval/videos_libero_visact_nodagger_max1200",
+      "ckpt_exists": true
+    },
+    {
+      "id": "libero_visact_r1",
+      "label": "libero VisAct DAgger r1",
+      "init": "pi05_libero",
+      "method": "VisAct LoRA",
+      "dagger": "r1",
+      "data": "scripted + DAgger r1",
+      "train_steps": 10000,
+      "ckpt": "pi05_lora_b_object_sawyer_merged_libero_init_sawyer_obj0_visact_s10000_dagger_liberoinit_visact_r1",
+      "repo": "libero_sawyer_scripted_obj0_osc_v8_dagger_liberoinit_visact_r1",
+      "old_eval_note": "",
+      "status": "done",
+      "summary": {
+        "n": 50,
+        "done": true,
+        "success_rate": 0.08,
+        "success": 4,
+        "near": 40,
+        "grasp": 13,
+        "lift": 13,
+        "transport": 8,
+        "place": 4
+      },
+      "videos": [
+        {
+          "ep": 34,
+          "label": "success",
+          "file": "videos/libero_visact_r1/success_ep34.mp4",
+          "min_eef_obj": 0.007,
+          "lift_m": 0.151,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 1,
+          "label": "success",
+          "file": "videos/libero_visact_r1/success_ep01.mp4",
+          "min_eef_obj": 0.004,
+          "lift_m": 0.146,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 7,
+          "label": "transport",
+          "file": "videos/libero_visact_r1/transport_ep07.mp4",
+          "min_eef_obj": 0.003,
+          "lift_m": 0.145,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": false
+          }
+        },
+        {
+          "ep": 35,
+          "label": "transport",
+          "file": "videos/libero_visact_r1/transport_ep35.mp4",
+          "min_eef_obj": 0.002,
+          "lift_m": 0.144,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": false
+          }
+        }
+      ],
+      "eval_log": "/storage3/tmp/yui.muranaka/openpi_eval/eval_libero_visact_r1_max1200.log",
+      "video_dir": "/storage3/tmp/yui.muranaka/openpi_eval/videos_libero_visact_r1_max1200",
+      "ckpt_exists": true
+    },
+    {
+      "id": "libero_visact_r2",
+      "label": "libero VisAct DAgger r2",
+      "init": "pi05_libero",
+      "method": "VisAct LoRA",
+      "dagger": "r2",
+      "data": "r1 merged + DAgger r2",
+      "train_steps": 10000,
+      "ckpt": "pi05_lora_b_object_sawyer_merged_libero_init_sawyer_obj0_visact_s10000_dagger_liberoinit_visact_r2",
+      "repo": "libero_sawyer_scripted_obj0_osc_v8_dagger_liberoinit_visact_r2",
+      "old_eval_note": "",
+      "status": "done",
+      "summary": {
+        "n": 50,
+        "done": true,
+        "success_rate": 0.26,
+        "success": 13,
+        "near": 50,
+        "grasp": 19,
+        "lift": 19,
+        "transport": 17,
+        "place": 12
+      },
+      "videos": [
+        {
+          "ep": 12,
+          "label": "success",
+          "file": "videos/libero_visact_r2/success_ep12.mp4",
+          "min_eef_obj": 0.001,
+          "lift_m": 0.15,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 43,
+          "label": "success",
+          "file": "videos/libero_visact_r2/success_ep43.mp4",
+          "min_eef_obj": 0.002,
+          "lift_m": 0.149,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 10,
+          "label": "transport",
+          "file": "videos/libero_visact_r2/transport_ep10.mp4",
+          "min_eef_obj": 0.002,
+          "lift_m": 0.146,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": false
+          }
+        },
+        {
+          "ep": 28,
+          "label": "transport",
+          "file": "videos/libero_visact_r2/transport_ep28.mp4",
+          "min_eef_obj": 0.002,
+          "lift_m": 0.145,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": false
+          }
+        }
+      ],
+      "eval_log": "/storage3/tmp/yui.muranaka/openpi_eval/eval_libero_visact_r2_max1200.log",
+      "video_dir": "/storage3/tmp/yui.muranaka/openpi_eval/videos_libero_visact_r2_max1200",
+      "ckpt_exists": true
+    },
+    {
+      "id": "base_visact_nodagger",
+      "label": "base VisAct scripted (DAggerなし)",
+      "init": "pi05_base",
+      "method": "VisAct LoRA",
+      "dagger": "none",
+      "data": "scripted OSC v8 (871 ep)",
+      "train_steps": 10000,
+      "ckpt": "pi05_lora_b_object_sawyer_merged_base_init_sawyer_obj0_visact_s10000_scripted_obj0_osc_v8",
+      "repo": "libero_sawyer_scripted_obj0_osc_v8",
+      "old_eval_note": "旧280: 0%",
+      "status": "done",
+      "summary": {
+        "n": 50,
+        "done": true,
+        "success_rate": 0.0,
+        "success": 0,
+        "near": 0,
+        "grasp": 0,
+        "lift": 0,
+        "transport": 0,
+        "place": 0
+      },
+      "videos": [
+        {
+          "ep": 7,
+          "label": "miss",
+          "file": "videos/base_visact_nodagger/miss_ep07.mp4",
+          "min_eef_obj": 0.053,
+          "lift_m": 0.0,
+          "flags": {
+            "success": false,
+            "near": false,
+            "grasp": false,
+            "lift": false,
+            "transport": false,
+            "place": false
+          }
+        },
+        {
+          "ep": 35,
+          "label": "miss",
+          "file": "videos/base_visact_nodagger/miss_ep35.mp4",
+          "min_eef_obj": 0.054,
+          "lift_m": 0.0,
+          "flags": {
+            "success": false,
+            "near": false,
+            "grasp": false,
+            "lift": false,
+            "transport": false,
+            "place": false
+          }
+        },
+        {
+          "ep": 1,
+          "label": "miss",
+          "file": "videos/base_visact_nodagger/miss_ep01.mp4",
+          "min_eef_obj": 0.061,
+          "lift_m": 0.0,
+          "flags": {
+            "success": false,
+            "near": false,
+            "grasp": false,
+            "lift": false,
+            "transport": false,
+            "place": false
+          }
+        },
+        {
+          "ep": 6,
+          "label": "miss",
+          "file": "videos/base_visact_nodagger/miss_ep06.mp4",
+          "min_eef_obj": 0.062,
+          "lift_m": 0.0,
+          "flags": {
+            "success": false,
+            "near": false,
+            "grasp": false,
+            "lift": false,
+            "transport": false,
+            "place": false
+          }
+        }
+      ],
+      "eval_log": "/storage3/tmp/yui.muranaka/openpi_eval/eval_base_visact_nodagger_max1200.log",
+      "video_dir": "/storage3/tmp/yui.muranaka/openpi_eval/videos_base_visact_nodagger_max1200",
+      "ckpt_exists": true
+    },
+    {
+      "id": "base_visact_r1",
+      "label": "base VisAct DAgger 1761",
+      "init": "pi05_base",
+      "method": "VisAct LoRA",
+      "dagger": "r1 (~1761)",
+      "data": "scripted + DAgger toward ~1761ep",
+      "train_steps": 10000,
+      "ckpt": "pi05_lora_b_object_sawyer_merged_base_init_sawyer_obj0_visact_s10000_dagger_baseinit_visact_dagger_1761",
+      "repo": "libero_sawyer_scripted_obj0_osc_v8_dagger_baseinit_visact_dagger_1761",
+      "old_eval_note": "",
+      "status": "done",
+      "summary": {
+        "n": 50,
+        "done": true,
+        "success_rate": 0.08,
+        "success": 4,
+        "near": 50,
+        "grasp": 7,
+        "lift": 7,
+        "transport": 5,
+        "place": 4
+      },
+      "videos": [
+        {
+          "ep": 9,
+          "label": "success",
+          "file": "videos/base_visact_r1/success_ep09.mp4",
+          "min_eef_obj": 0.001,
+          "lift_m": 0.173,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 11,
+          "label": "success",
+          "file": "videos/base_visact_r1/success_ep11.mp4",
+          "min_eef_obj": 0.005,
+          "lift_m": 0.171,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 30,
+          "label": "transport",
+          "file": "videos/base_visact_r1/transport_ep30.mp4",
+          "min_eef_obj": 0.002,
+          "lift_m": 0.125,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": false
+          }
+        },
+        {
+          "ep": 31,
+          "label": "lift",
+          "file": "videos/base_visact_r1/lift_ep31.mp4",
+          "min_eef_obj": 0.006,
+          "lift_m": 0.099,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": false,
+            "place": false
+          }
+        }
+      ],
+      "eval_log": "/storage3/tmp/yui.muranaka/openpi_eval/eval_base_visact_r1_max1200.log",
+      "video_dir": "/storage3/tmp/yui.muranaka/openpi_eval/videos_base_visact_r1_max1200",
+      "ckpt_exists": true
+    },
+    {
+      "id": "base_visact_r2",
+      "label": "base VisAct DAgger r2",
+      "init": "pi05_base",
+      "method": "VisAct LoRA",
+      "dagger": "r2",
+      "data": "r1 merged + DAgger r2",
+      "train_steps": 10000,
+      "ckpt": "pi05_lora_b_object_sawyer_merged_base_init_sawyer_obj0_visact_s10000_dagger_baseinit_visact_dagger_r2",
+      "repo": "libero_sawyer_scripted_obj0_osc_v8_dagger_baseinit_visact_dagger_r2",
+      "old_eval_note": "",
+      "status": "done",
+      "summary": {
+        "n": 50,
+        "done": true,
+        "success_rate": 0.04,
+        "success": 2,
+        "near": 36,
+        "grasp": 3,
+        "lift": 3,
+        "transport": 3,
+        "place": 2
+      },
+      "videos": [
+        {
+          "ep": 40,
+          "label": "success",
+          "file": "videos/base_visact_r2/success_ep40.mp4",
+          "min_eef_obj": 0.008,
+          "lift_m": 0.144,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 29,
+          "label": "success",
+          "file": "videos/base_visact_r2/success_ep29.mp4",
+          "min_eef_obj": 0.006,
+          "lift_m": 0.14,
+          "flags": {
+            "success": true,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": true
+          }
+        },
+        {
+          "ep": 10,
+          "label": "transport",
+          "file": "videos/base_visact_r2/transport_ep10.mp4",
+          "min_eef_obj": 0.007,
+          "lift_m": 0.117,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": true,
+            "lift": true,
+            "transport": true,
+            "place": false
+          }
+        },
+        {
+          "ep": 31,
+          "label": "near",
+          "file": "videos/base_visact_r2/near_ep31.mp4",
+          "min_eef_obj": 0.018,
+          "lift_m": 0.013,
+          "flags": {
+            "success": false,
+            "near": true,
+            "grasp": false,
+            "lift": false,
+            "transport": false,
+            "place": false
+          }
+        }
+      ],
+      "eval_log": "/storage3/tmp/yui.muranaka/openpi_eval/eval_base_visact_r2_max1200.log",
+      "video_dir": "/storage3/tmp/yui.muranaka/openpi_eval/videos_base_visact_r2_max1200",
+      "ckpt_exists": true
+    }
+  ],
+  "common_train": {
+    "config": "pi05_lora_b_object_sawyer",
+    "batch_size": "4（1 GPU）",
+    "train_steps": "10000（Full FT のみ 5000）",
+    "save_interval": "5000",
+    "optimizer / lr": "デフォルト（末尾付近 lr≈5e-5）",
+    "control": "delta_osc · 20 Hz · home_w30",
+    "scripted base data": "libero_sawyer_scripted_obj0_osc_v8（〜871 ep、approach_noise≈0.015 あり）",
+    "DAgger": "条件により none / r1 / r2 / closefail_v2（下表）"
+  },
+  "clean50": {
+    "状態": "export → FullLoRA / VisAct 学習 → max1200×50 評価",
+    "pipeline": "run_clean50_libero_fulllora_visact.sh（FORCE_CLEAN50=1）",
+    "init": "pi05_libero（pi05_libero_pytorch）",
+    "methods": "Full LoRA + VisAct LoRA · DAgger なし",
+    "config": "pi05_lora_b_object_sawyer",
+    "train_steps / bs": "10000 / 4",
+    "data": "libero_sawyer_scripted_obj0_osc_v8_clean50（先頭50本に subset）",
+    "export": "max_inits=120 → 成功分を保存 → n=50 に subset · overwrite",
+    "approach_noise": "0.0 × 0 copies（旧 osc_v8 との差分）",
+    "motion": "compact · grasp=ik_set · path_step=0.008 · min_lift_dz=0.08 · release_pad_min=25 · retrack OSC · open-loop 必須",
+    "home / fps": "home_w30 · dataset_fps=20 · control_freq=20 · delta_osc",
+    "eval": "既存と同じ（seed=7 · 50 trials · max_steps=1200 · sawyer）",
+    "storage": "/share7/yui.muranaka/openpi_appearance（datasets/checkpoints/logs/videos）",
+    "preview": "docs/clean50_preview/ または Desktop reeval_max1200/clean50_preview/",
+    "exp names": "..._fulllora_s10000_scripted_obj0_osc_v8_clean50 / ..._visact_s10000_..."
+  }
+}

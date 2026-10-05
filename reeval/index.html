@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sawyer Re-eval max_steps=1200</title>
+  <style>
+    :root {
+      --bg: #f3f0ea;
+      --ink: #1a1916;
+      --muted: #5a554c;
+      --line: #d4cdc0;
+      --card: #fffcf7;
+      --accent: #0d6b52;
+      --warn: #8a4b08;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Noto Sans JP", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1000px 420px at 0% -10%, #dfece4 0%, transparent 55%),
+        radial-gradient(800px 360px at 100% 0%, #efe2d2 0%, transparent 50%),
+        var(--bg);
+      line-height: 1.45;
+    }
+    main { max-width: 1120px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    h1 { font-size: 1.7rem; margin: 0 0 0.35rem; letter-spacing: -0.02em; }
+    h2 { font-size: 1.15rem; margin: 2rem 0 0.75rem; }
+    h3 { margin: 0; font-size: 1.02rem; }
+    p.lead { color: var(--muted); margin: 0 0 1rem; max-width: 46rem; }
+    .note {
+      border-left: 3px solid var(--warn);
+      background: #fff6e8;
+      padding: 0.75rem 1rem;
+      margin: 1rem 0 1.25rem;
+      color: #5a3b12;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border: 1px solid var(--line);
+      font-size: 0.88rem;
+      margin-bottom: 0.75rem;
+    }
+    th, td { padding: 0.5rem 0.55rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #efe9de; font-weight: 600; }
+    table.mini th { width: 7.5rem; }
+    .ok { color: var(--accent); font-weight: 700; }
+    .bad { color: #9b1c1c; font-weight: 700; }
+    .run {
+      margin: 1.1rem 0;
+      padding: 1rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+    .run-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.45rem;
+    }
+    .sr-badge {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+    .meta { color: var(--muted); font-size: 0.84rem; margin: 0 0 0.7rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 0.7rem;
+      margin-top: 0.75rem;
+    }
+    .clip {
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 0.35rem;
+    }
+    .clip video { width: 100%; display: block; background: #111; aspect-ratio: 16/10; }
+    .clip .cap { font-size: 0.76rem; margin-top: 0.3rem; color: var(--muted); }
+    code { font-size: 0.78rem; word-break: break-all; }
+    footer { margin-top: 2rem; color: var(--muted); font-size: 0.82rem; }
+  </style>
+</head>
+<body>
+<main>
+  <nav class="crumb" style="font-size:0.86rem;color:#5a554c;margin-bottom:0.9rem">
+    <a href="../conditions/index.html">学習条件まとめ</a> ·
+    <a href="../index.html">clean50 gallery</a> ·
+    <a href="../smoke/index.html">smoke</a>
+  </nav>
+  <h1>Sawyer Task0 — Re-eval (max_steps=1200)</h1>
+  <p class="lead">
+    評価予算バグ修正後の再測定（12条件・各50 trials）。表は成功率降順。
+    各セクション右上に成功率。動画は成功回を優先、なければ最遠到達を抜粋。
+    生成: 2026-09-16T06:45:19+09:00 · データ作成メモ追記: 2026-10-05
+  </p>
+  <div class="note">
+    <strong>読み方:</strong> scripted-only は接近後〜place で崩れやすい。DAgger あり（特に libero FullLoRA r1）が伸びる。
+    旧280結果との比較は Full FT / scripted-only では無効寄り。
+    clean50（open-loop成功・noise=0×50）は完了: FullLoRA 8% / VisAct 0% / Full FT 0%（比較基準は s10000·effbs4、near=50/50·grasp=0）。詳細は <a href="../index.html">clean50_gallery</a>。
+  </div>
+
+  <h2>結果サマリ（成功率つき）</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>条件</th><th>状態</th><th>成功率</th>
+        <th>near</th><th>grasp</th><th>lift</th><th>transport</th><th>place</th>
+        <th>旧評価メモ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>libero FullLoRA DAgger r1</td><td>完了</td><td class="ok">38.0% (19/50)</td><td>34/50</td><td>22/50</td><td>22/50</td><td>20/50</td><td>19/50</td><td>旧280: 要参照</td></tr><tr><td>libero FullLoRA DAgger r2</td><td>完了</td><td class="ok">30.0% (15/50)</td><td>50/50</td><td>28/50</td><td>28/50</td><td>20/50</td><td>19/50</td><td>旧280: ~16%</td></tr><tr><td>libero VisAct DAgger r2</td><td>完了</td><td class="ok">26.0% (13/50)</td><td>50/50</td><td>19/50</td><td>19/50</td><td>17/50</td><td>12/50</td><td></td></tr><tr><td>base FullLoRA closefail_v2（正の対照）</td><td>完了</td><td class="ok">22.0% (11/50)</td><td>49/50</td><td>20/50</td><td>20/50</td><td>17/50</td><td>10/50</td><td>旧280: 28%</td></tr><tr><td>libero VisAct DAgger r1</td><td>完了</td><td class="ok">8.0% (4/50)</td><td>40/50</td><td>13/50</td><td>13/50</td><td>8/50</td><td>4/50</td><td></td></tr><tr><td>base VisAct DAgger 1761</td><td>完了</td><td class="ok">8.0% (4/50)</td><td>50/50</td><td>7/50</td><td>7/50</td><td>5/50</td><td>4/50</td><td></td></tr><tr><td>libero VisAct scripted (DAggerなし)</td><td>完了</td><td class="ok">4.0% (2/50)</td><td>34/50</td><td>11/50</td><td>9/50</td><td>8/50</td><td>4/50</td><td>旧280: 低め</td></tr><tr><td>base VisAct DAgger r2</td><td>完了</td><td class="ok">4.0% (2/50)</td><td>36/50</td><td>3/50</td><td>3/50</td><td>3/50</td><td>2/50</td><td></td></tr><tr><td>libero Full FT (subset50)</td><td>完了</td><td class="bad">0.0% (0/50)</td><td>5/50</td><td>0/50</td><td>0/50</td><td>0/50</td><td>0/50</td><td>旧280: 0%（予算不足で無効）</td></tr><tr><td>libero FullLoRA scripted (DAggerなし)</td><td>完了</td><td class="bad">0.0% (0/50)</td><td>40/50</td><td>14/50</td><td>13/50</td><td>10/50</td><td>0/50</td><td>旧280: 0%</td></tr><tr><td>base FullLoRA scripted (DAggerなし)</td><td>完了</td><td class="bad">0.0% (0/50)</td><td>10/50</td><td>1/50</td><td>1/50</td><td>0/50</td><td>0/50</td><td>旧280: 0%</td></tr><tr><td>base VisAct scripted (DAggerなし)</td><td>完了</td><td class="bad">0.0% (0/50)</td><td>0/50</td><td>0/50</td><td>0/50</td><td>0/50</td><td>0/50</td><td>旧280: 0%</td></tr>
+    </tbody>
+  </table>
+  
+
+  <h2>共通の評価条件</h2>
+  <table class="mini"><tbody><tr><th>robot</th><td>sawyer</td></tr><tr><th>task</th><td>libero_object task0 (alphabet soup → basket)</td></tr><tr><th>seed</th><td>7</td></tr><tr><th>num_trials</th><td>50</td></tr><tr><th>max_steps</th><td>1200</td></tr><tr><th>env_horizon</th><td>1260</td></tr><tr><th>home</th><td>home_w30</td></tr><tr><th>control_freq_hz</th><td>20</td></tr><tr><th>action_space</th><td>delta_osc</td></tr><tr><th>gripper_start</th><td>open (task0)</td></tr><tr><th>note</th><td>旧評価は max_steps=280（Frankaスケール）。今回はデモ長〜1044に合わせて1200に修正。</td></tr></tbody></table>
+
+  <h2>共通の学習条件（既存12条件）</h2>
+  <table class="mini"><tbody>
+    <tr><th>config</th><td><code>pi05_lora_b_object_sawyer</code></td></tr>
+    <tr><th>batch_size</th><td>4（1 GPU）</td></tr>
+    <tr><th>train_steps</th><td>10000（Full FT のみ 5000）</td></tr>
+    <tr><th>save_interval</th><td>5000</td></tr>
+    <tr><th>optimizer / lr</th><td>デフォルト（末尾付近 lr≈5e-5）</td></tr>
+    <tr><th>control</th><td>delta_osc · 20 Hz · home_w30</td></tr>
+    <tr><th>scripted base data</th><td><code>libero_sawyer_scripted_obj0_osc_v8</code>（<strong>871 ep</strong>、approach_noise≈0.015 あり）</td></tr>
+    <tr><th>DAgger</th><td>条件により none / r1 / r2 / closefail_v2（下表）</td></tr>
+  </tbody></table>
+
+  <h2 id="data-recipe">データの作り方（何 ep を学習したか）</h2>
+  <div class="note">
+    <strong>ポイント:</strong> 「学習に使った ep 数」= 下表の <em>train_ep</em>（LeRobot repo の総エピソード数）。
+    DAgger 条件は scripted ベースに expert takeover デモを合流（多くは expert 成功エピソードを繰り返しマージ）。
+  </div>
+
+  <h3 style="font-size:1.02rem;margin:1rem 0 0.45rem">A. Scripted ベース（osc_v8）の作り方</h3>
+  <ol style="margin:0.35rem 0 0.85rem;padding-left:1.2rem;font-size:0.9rem;color:#5a554c">
+    <li>Sawyer · Task0 · scripted 軌道をシミュで実行（grasp=<code>ik_set</code> · path_step≈8mm · compact · home_w30）</li>
+    <li>接近に <strong>approach_noise ≈ 1.5cm × 3 copies</strong>（+ clean）を混ぜて多様性を確保</li>
+    <li>ライブ IK デモを <strong>OSC（delta_osc）に retrack</strong> して学習用 action に揃える</li>
+    <li><code>--require-open-loop</code>: 記録 action の再生で lift+place できるデモだけ残す</li>
+    <li>結果: <code>libero_sawyer_scripted_obj0_osc_v8</code> = <strong>871 ep</strong></li>
+  </ol>
+
+  <h3 style="font-size:1.02rem;margin:1rem 0 0.45rem">B. DAgger の作り方</h3>
+  <ol style="margin:0.35rem 0 0.85rem;padding-left:1.2rem;font-size:0.9rem;color:#5a554c">
+    <li>student（前段ポリシー）を <strong>closed-loop</strong> で走らせる</li>
+    <li>接近失敗・掴み失敗などのトリガで <strong>OSC expert が takeover</strong>（pose を引き継ぐ）</li>
+    <li>expert 成功エピソードのみ採用（<code>--require-expert-success</code>）</li>
+    <li><code>merge_lerobot_repos.py</code> で scripted（または前 round）と合流。expert 側は <strong>extra-repeat（多くは ×10）</strong> で増幅</li>
+    <li>合流データで再学習（steps=10000 · bs=4）→ LoRA merge → 本評価</li>
+  </ol>
+
+  <h3 style="font-size:1.02rem;margin:1rem 0 0.45rem">C. 条件ごとの学習データ量（実測 ep）</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>条件</th><th>train_ep</th><th>データの中身</th><th>作り方の要約</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>libero / base · scripted（DAggerなし）</td>
+        <td><strong>871</strong></td>
+        <td><code>…osc_v8</code></td>
+        <td>上記 A のみ</td>
+      </tr>
+      <tr>
+        <td>libero Full FT subset50</td>
+        <td><strong>50</strong></td>
+        <td><code>…osc_v8_subset50_s7</code></td>
+        <td>osc_v8 の先頭50本だけ</td>
+      </tr>
+      <tr>
+        <td>libero FullLoRA DAgger r1</td>
+        <td><strong>1351</strong></td>
+        <td><code>…dagger_liberoinit_fulllora_r1</code></td>
+        <td>871 + FullLoRA(nodagger) student の takeover を merge</td>
+      </tr>
+      <tr>
+        <td>libero FullLoRA DAgger r2</td>
+        <td><strong>1581</strong></td>
+        <td><code>…fulllora_r2</code></td>
+        <td>r1 合流データ + r1 ポリシーでの追加 takeover</td>
+      </tr>
+      <tr>
+        <td>libero VisAct DAgger r1</td>
+        <td><strong>1181</strong></td>
+        <td><code>…visact_r1</code></td>
+        <td>871 + VisAct(nodagger) student takeover</td>
+      </tr>
+      <tr>
+        <td>libero VisAct DAgger r2</td>
+        <td><strong>1521</strong></td>
+        <td><code>…visact_r2</code></td>
+        <td>r1 合流 + r1 ポリシーでの追加 takeover</td>
+      </tr>
+      <tr>
+        <td>base VisAct DAgger 1761（タグ名）</td>
+        <td><strong>1249</strong></td>
+        <td><code>…baseinit_visact_dagger_1761</code></td>
+        <td>目標タグは 1761 だが、実 repo は 1249 ep</td>
+      </tr>
+      <tr>
+        <td>base VisAct DAgger r2</td>
+        <td><strong>1719</strong></td>
+        <td><code>…baseinit_visact_dagger_r2</code></td>
+        <td>前段 base VisAct dagger + 追加 takeover</td>
+      </tr>
+      <tr>
+        <td>base FullLoRA closefail_v2</td>
+        <td><strong>1761</strong></td>
+        <td><code>…dagger_closefail_v2</code></td>
+        <td>接近〜掴み失敗（close-fail）トリガの takeover を scripted に合流</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>条件別の学習設定（既存12）</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>条件</th><th>init</th><th>method</th><th>DAgger</th><th>train_ep</th><th>data</th><th>steps</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>libero FullLoRA DAgger r1</td><td>pi05_libero</td><td>Full LoRA</td><td>r1</td><td><strong>1351</strong></td><td>scripted + DAgger r1</td><td>10000</td></tr>
+      <tr><td>libero FullLoRA DAgger r2</td><td>pi05_libero</td><td>Full LoRA</td><td>r2</td><td><strong>1581</strong></td><td>r1 merged + DAgger r2</td><td>10000</td></tr>
+      <tr><td>libero VisAct DAgger r2</td><td>pi05_libero</td><td>VisAct LoRA</td><td>r2</td><td><strong>1521</strong></td><td>r1 merged + DAgger r2</td><td>10000</td></tr>
+      <tr><td>base FullLoRA closefail_v2</td><td>pi05_base</td><td>Full LoRA</td><td>closefail_v2</td><td><strong>1761</strong></td><td>scripted + closefail DAgger</td><td>10000</td></tr>
+      <tr><td>libero VisAct DAgger r1</td><td>pi05_libero</td><td>VisAct LoRA</td><td>r1</td><td><strong>1181</strong></td><td>scripted + DAgger r1</td><td>10000</td></tr>
+      <tr><td>base VisAct DAgger 1761</td><td>pi05_base</td><td>VisAct LoRA</td><td>r1（実1249）</td><td><strong>1249</strong></td><td>scripted + DAgger</td><td>10000</td></tr>
+      <tr><td>libero VisAct scripted</td><td>pi05_libero</td><td>VisAct LoRA</td><td>none</td><td><strong>871</strong></td><td>scripted OSC v8</td><td>10000</td></tr>
+      <tr><td>base VisAct DAgger r2</td><td>pi05_base</td><td>VisAct LoRA</td><td>r2</td><td><strong>1719</strong></td><td>r1 merged + DAgger r2</td><td>10000</td></tr>
+      <tr><td>libero Full FT (subset50)</td><td>pi05_libero</td><td>Full FT</td><td>none</td><td><strong>50</strong></td><td>scripted 先頭50</td><td>5000</td></tr>
+      <tr><td>libero FullLoRA scripted</td><td>pi05_libero</td><td>Full LoRA</td><td>none</td><td><strong>871</strong></td><td>scripted OSC v8</td><td>10000</td></tr>
+      <tr><td>base FullLoRA scripted</td><td>pi05_base</td><td>Full LoRA</td><td>none</td><td><strong>871</strong></td><td>scripted OSC v8</td><td>10000</td></tr>
+      <tr><td>base VisAct scripted</td><td>pi05_base</td><td>VisAct LoRA</td><td>none</td><td><strong>871</strong></td><td>scripted OSC v8</td><td>10000</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="clean50">次の実験: clean50（結果あり）</h2>
+  <div class="note">
+    open-loop 成功のみ・approach_noise=0 のデモ×50で再学習した結果:
+    <strong>FullLoRA 8%</strong> / VisAct 0% / Full FT 0%。
+    3条件とも step=10000 · effbs=4（Full FT は 2GPU×bs2）。詳細・動画は
+    <a href="../index.html">clean50_gallery</a>。
+  </div>
+  <table class="mini"><tbody>
+    <tr><th>状態</th><td>完了（FullLoRA / VisAct / Full FT すべて max1200 評価済み）</td></tr>
+    <tr><th>FullLoRA</th><td class="ok">8.0%（4/50）· near50 grasp18 place7</td></tr>
+    <tr><th>VisAct</th><td class="bad">0.0%（0/50）· near40 grasp7 place1</td></tr>
+    <tr><th>Full FT</th><td class="bad">0.0%（0/50）· near50 grasp0 · s10000 · effbs4（比較基準）</td></tr>
+    <tr><th>data</th><td><code>libero_sawyer_scripted_obj0_osc_v8_clean50</code>（--require-open-loop 成功のみ · noise=0）</td></tr>
+    <tr><th>init</th><td>pi05_libero</td></tr>
+    <tr><th>eval</th><td>seed=7 · 50 trials · max_steps=1200</td></tr>
+  </tbody></table>
+
+  <h2>条件別・動画（成功率つき）</h2>
+  <section class="run" id="libero_fulllora_r1"><div class="run-head"><h3>libero FullLoRA DAgger r1</h3><div class="sr-badge ok">38.0%</div></div><p class="meta">成功率 <strong class="ok">38.0%</strong>（19/50 成功） · init=pi05_libero · Full LoRA · dagger=r1 · data=scripted + DAgger r1 · steps=10000</p><table class="mini"><tbody><tr><th>成功率</th><td><code>38.0%（19/50 成功）</code></td></tr><tr><th>ckpt</th><td><code>pi05_lora_b_object_sawyer_merged_libero_init_sawyer_obj0_fulllora_s10000_dagger_liberoinit_fulllora_r1</code></td></tr><tr><th>repo / norm</th><td><code>libero_sawyer_scripted_obj0_osc_v8_dagger_liberoinit_fulllora_r1</code></td></tr><tr><th>eval_log</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/eval_libero_fulllora_r1_max1200.log</code></td></tr><tr><th>video_dir</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/videos_libero_fulllora_r1_max1200</code></td></tr></tbody></table><div class="grid"><div class="clip"><video controls preload="metadata" src="videos/libero_fulllora_r1/success_ep17.mp4"></video><div class="cap">ep17 · success · min_eef=0.005m · lift=0.239m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_fulllora_r1/success_ep29.mp4"></video><div class="cap">ep29 · success · min_eef=0.007m · lift=0.181m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_fulllora_r1/place_ep39.mp4"></video><div class="cap">ep39 · place · min_eef=0.002m · lift=0.316m<br/>flags: near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_fulllora_r1/lift_ep12.mp4"></video><div class="cap">ep12 · lift · min_eef=0.005m · lift=0.135m<br/>flags: near, grasp, lift</div></div></div></section><section class="run" id="libero_fulllora_r2"><div class="run-head"><h3>libero FullLoRA DAgger r2</h3><div class="sr-badge ok">30.0%</div></div><p class="meta">成功率 <strong class="ok">30.0%</strong>（15/50 成功） · init=pi05_libero · Full LoRA · dagger=r2 · data=r1 merged + DAgger r2 · steps=10000</p><table class="mini"><tbody><tr><th>成功率</th><td><code>30.0%（15/50 成功）</code></td></tr><tr><th>ckpt</th><td><code>pi05_lora_b_object_sawyer_merged_libero_init_sawyer_obj0_fulllora_s10000_dagger_liberoinit_fulllora_r2</code></td></tr><tr><th>repo / norm</th><td><code>libero_sawyer_scripted_obj0_osc_v8_dagger_liberoinit_fulllora_r2</code></td></tr><tr><th>eval_log</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/eval_libero_fulllora_r2_max1200.log</code></td></tr><tr><th>video_dir</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/videos_libero_fulllora_r2_max1200</code></td></tr></tbody></table><div class="grid"><div class="clip"><video controls preload="metadata" src="videos/libero_fulllora_r2/success_ep25.mp4"></video><div class="cap">ep25 · success · min_eef=0.005m · lift=0.309m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_fulllora_r2/success_ep49.mp4"></video><div class="cap">ep49 · success · min_eef=0.003m · lift=0.287m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_fulllora_r2/place_ep19.mp4"></video><div class="cap">ep19 · place · min_eef=0.004m · lift=0.313m<br/>flags: near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_fulllora_r2/place_ep24.mp4"></video><div class="cap">ep24 · place · min_eef=0.004m · lift=0.276m<br/>flags: near, grasp, lift, transport, place</div></div></div></section><section class="run" id="libero_visact_r2"><div class="run-head"><h3>libero VisAct DAgger r2</h3><div class="sr-badge ok">26.0%</div></div><p class="meta">成功率 <strong class="ok">26.0%</strong>（13/50 成功） · init=pi05_libero · VisAct LoRA · dagger=r2 · data=r1 merged + DAgger r2 · steps=10000</p><table class="mini"><tbody><tr><th>成功率</th><td><code>26.0%（13/50 成功）</code></td></tr><tr><th>ckpt</th><td><code>pi05_lora_b_object_sawyer_merged_libero_init_sawyer_obj0_visact_s10000_dagger_liberoinit_visact_r2</code></td></tr><tr><th>repo / norm</th><td><code>libero_sawyer_scripted_obj0_osc_v8_dagger_liberoinit_visact_r2</code></td></tr><tr><th>eval_log</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/eval_libero_visact_r2_max1200.log</code></td></tr><tr><th>video_dir</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/videos_libero_visact_r2_max1200</code></td></tr></tbody></table><div class="grid"><div class="clip"><video controls preload="metadata" src="videos/libero_visact_r2/success_ep12.mp4"></video><div class="cap">ep12 · success · min_eef=0.001m · lift=0.150m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_visact_r2/success_ep43.mp4"></video><div class="cap">ep43 · success · min_eef=0.002m · lift=0.149m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_visact_r2/transport_ep10.mp4"></video><div class="cap">ep10 · transport · min_eef=0.002m · lift=0.146m<br/>flags: near, grasp, lift, transport</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_visact_r2/transport_ep28.mp4"></video><div class="cap">ep28 · transport · min_eef=0.002m · lift=0.145m<br/>flags: near, grasp, lift, transport</div></div></div></section><section class="run" id="hist_closefail_v2"><div class="run-head"><h3>base FullLoRA closefail_v2（正の対照）</h3><div class="sr-badge ok">22.0%</div></div><p class="meta">成功率 <strong class="ok">22.0%</strong>（11/50 成功） · init=pi05_base · Full LoRA · dagger=closefail_v2 · data=scripted + closefail DAgger · steps=10000</p><table class="mini"><tbody><tr><th>成功率</th><td><code>22.0%（11/50 成功）</code></td></tr><tr><th>ckpt</th><td><code>pi05_lora_b_object_sawyer_merged_bs4_10000_scripted_obj0_osc_v8_dagger_closefail_v2</code></td></tr><tr><th>repo / norm</th><td><code>libero_sawyer_scripted_obj0_osc_v8_dagger_closefail_v2</code></td></tr><tr><th>eval_log</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/eval_hist_closefail_v2_max1200.log</code></td></tr><tr><th>video_dir</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/videos_hist_closefail_v2_max1200</code></td></tr></tbody></table><div class="grid"><div class="clip"><video controls preload="metadata" src="videos/hist_closefail_v2/success_ep37.mp4"></video><div class="cap">ep37 · success · min_eef=0.006m · lift=0.160m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/hist_closefail_v2/success_ep48.mp4"></video><div class="cap">ep48 · success · min_eef=0.008m · lift=0.160m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/hist_closefail_v2/transport_ep02.mp4"></video><div class="cap">ep2 · transport · min_eef=0.002m · lift=0.159m<br/>flags: near, grasp, lift, transport</div></div><div class="clip"><video controls preload="metadata" src="videos/hist_closefail_v2/transport_ep19.mp4"></video><div class="cap">ep19 · transport · min_eef=0.003m · lift=0.145m<br/>flags: near, grasp, lift, transport</div></div></div></section><section class="run" id="libero_visact_r1"><div class="run-head"><h3>libero VisAct DAgger r1</h3><div class="sr-badge ok">8.0%</div></div><p class="meta">成功率 <strong class="ok">8.0%</strong>（4/50 成功） · init=pi05_libero · VisAct LoRA · dagger=r1 · data=scripted + DAgger r1 · steps=10000</p><table class="mini"><tbody><tr><th>成功率</th><td><code>8.0%（4/50 成功）</code></td></tr><tr><th>ckpt</th><td><code>pi05_lora_b_object_sawyer_merged_libero_init_sawyer_obj0_visact_s10000_dagger_liberoinit_visact_r1</code></td></tr><tr><th>repo / norm</th><td><code>libero_sawyer_scripted_obj0_osc_v8_dagger_liberoinit_visact_r1</code></td></tr><tr><th>eval_log</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/eval_libero_visact_r1_max1200.log</code></td></tr><tr><th>video_dir</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/videos_libero_visact_r1_max1200</code></td></tr></tbody></table><div class="grid"><div class="clip"><video controls preload="metadata" src="videos/libero_visact_r1/success_ep34.mp4"></video><div class="cap">ep34 · success · min_eef=0.007m · lift=0.151m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_visact_r1/success_ep01.mp4"></video><div class="cap">ep1 · success · min_eef=0.004m · lift=0.146m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_visact_r1/transport_ep07.mp4"></video><div class="cap">ep7 · transport · min_eef=0.003m · lift=0.145m<br/>flags: near, grasp, lift, transport</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_visact_r1/transport_ep35.mp4"></video><div class="cap">ep35 · transport · min_eef=0.002m · lift=0.144m<br/>flags: near, grasp, lift, transport</div></div></div></section><section class="run" id="base_visact_r1"><div class="run-head"><h3>base VisAct DAgger 1761</h3><div class="sr-badge ok">8.0%</div></div><p class="meta">成功率 <strong class="ok">8.0%</strong>（4/50 成功） · init=pi05_base · VisAct LoRA · dagger=r1 (~1761) · data=scripted + DAgger toward ~1761ep · steps=10000</p><table class="mini"><tbody><tr><th>成功率</th><td><code>8.0%（4/50 成功）</code></td></tr><tr><th>ckpt</th><td><code>pi05_lora_b_object_sawyer_merged_base_init_sawyer_obj0_visact_s10000_dagger_baseinit_visact_dagger_1761</code></td></tr><tr><th>repo / norm</th><td><code>libero_sawyer_scripted_obj0_osc_v8_dagger_baseinit_visact_dagger_1761</code></td></tr><tr><th>eval_log</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/eval_base_visact_r1_max1200.log</code></td></tr><tr><th>video_dir</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/videos_base_visact_r1_max1200</code></td></tr></tbody></table><div class="grid"><div class="clip"><video controls preload="metadata" src="videos/base_visact_r1/success_ep09.mp4"></video><div class="cap">ep9 · success · min_eef=0.001m · lift=0.173m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/base_visact_r1/success_ep11.mp4"></video><div class="cap">ep11 · success · min_eef=0.005m · lift=0.171m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/base_visact_r1/transport_ep30.mp4"></video><div class="cap">ep30 · transport · min_eef=0.002m · lift=0.125m<br/>flags: near, grasp, lift, transport</div></div><div class="clip"><video controls preload="metadata" src="videos/base_visact_r1/lift_ep31.mp4"></video><div class="cap">ep31 · lift · min_eef=0.006m · lift=0.099m<br/>flags: near, grasp, lift</div></div></div></section><section class="run" id="libero_visact_nodagger"><div class="run-head"><h3>libero VisAct scripted (DAggerなし)</h3><div class="sr-badge ok">4.0%</div></div><p class="meta">成功率 <strong class="ok">4.0%</strong>（2/50 成功） · init=pi05_libero · VisAct LoRA · dagger=none · data=scripted OSC v8 (871 ep) · steps=10000</p><table class="mini"><tbody><tr><th>成功率</th><td><code>4.0%（2/50 成功）</code></td></tr><tr><th>ckpt</th><td><code>pi05_lora_b_object_sawyer_merged_libero_init_sawyer_obj0_visact_s10000_scripted_obj0_osc_v8</code></td></tr><tr><th>repo / norm</th><td><code>libero_sawyer_scripted_obj0_osc_v8</code></td></tr><tr><th>eval_log</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/eval_libero_visact_nodagger_max1200.log</code></td></tr><tr><th>video_dir</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/videos_libero_visact_nodagger_max1200</code></td></tr></tbody></table><div class="grid"><div class="clip"><video controls preload="metadata" src="videos/libero_visact_nodagger/success_ep12.mp4"></video><div class="cap">ep12 · success · min_eef=0.012m · lift=0.147m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_visact_nodagger/success_ep27.mp4"></video><div class="cap">ep27 · success · min_eef=0.013m · lift=0.144m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_visact_nodagger/place_ep02.mp4"></video><div class="cap">ep2 · place · min_eef=0.000m · lift=0.175m<br/>flags: near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_visact_nodagger/place_ep11.mp4"></video><div class="cap">ep11 · place · min_eef=0.004m · lift=0.171m<br/>flags: near, grasp, lift, transport, place</div></div></div></section><section class="run" id="base_visact_r2"><div class="run-head"><h3>base VisAct DAgger r2</h3><div class="sr-badge ok">4.0%</div></div><p class="meta">成功率 <strong class="ok">4.0%</strong>（2/50 成功） · init=pi05_base · VisAct LoRA · dagger=r2 · data=r1 merged + DAgger r2 · steps=10000</p><table class="mini"><tbody><tr><th>成功率</th><td><code>4.0%（2/50 成功）</code></td></tr><tr><th>ckpt</th><td><code>pi05_lora_b_object_sawyer_merged_base_init_sawyer_obj0_visact_s10000_dagger_baseinit_visact_dagger_r2</code></td></tr><tr><th>repo / norm</th><td><code>libero_sawyer_scripted_obj0_osc_v8_dagger_baseinit_visact_dagger_r2</code></td></tr><tr><th>eval_log</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/eval_base_visact_r2_max1200.log</code></td></tr><tr><th>video_dir</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/videos_base_visact_r2_max1200</code></td></tr></tbody></table><div class="grid"><div class="clip"><video controls preload="metadata" src="videos/base_visact_r2/success_ep40.mp4"></video><div class="cap">ep40 · success · min_eef=0.008m · lift=0.144m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/base_visact_r2/success_ep29.mp4"></video><div class="cap">ep29 · success · min_eef=0.006m · lift=0.140m<br/>flags: success, near, grasp, lift, transport, place</div></div><div class="clip"><video controls preload="metadata" src="videos/base_visact_r2/transport_ep10.mp4"></video><div class="cap">ep10 · transport · min_eef=0.007m · lift=0.117m<br/>flags: near, grasp, lift, transport</div></div><div class="clip"><video controls preload="metadata" src="videos/base_visact_r2/near_ep31.mp4"></video><div class="cap">ep31 · near · min_eef=0.018m · lift=0.013m<br/>flags: near</div></div></div></section><section class="run" id="fullft_libero_subset50"><div class="run-head"><h3>libero Full FT (subset50)</h3><div class="sr-badge bad">0.0%</div></div><p class="meta">成功率 <strong class="bad">0.0%</strong>（0/50 成功） · init=pi05_libero · Full FT (no LoRA) · dagger=none · data=scripted OSC v8 subset50 (先頭50本) · steps=5000</p><table class="mini"><tbody><tr><th>成功率</th><td><code>0.0%（0/50 成功）</code></td></tr><tr><th>ckpt</th><td><code>pi05_lora_b_object_sawyer/libero_init_sawyer_obj0_fullft_s5000_subset50_s7/5000</code></td></tr><tr><th>repo / norm</th><td><code>libero_sawyer_scripted_obj0_osc_v8_subset50_s7</code></td></tr><tr><th>eval_log</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/eval_fullft_libero_subset50_max1200.log</code></td></tr><tr><th>video_dir</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/videos_fullft_libero_subset50_max1200</code></td></tr></tbody></table><div class="grid"><div class="clip"><video controls preload="metadata" src="videos/fullft_libero_subset50/near_ep06.mp4"></video><div class="cap">ep6 · near · min_eef=0.001m · lift=0.000m<br/>flags: near</div></div><div class="clip"><video controls preload="metadata" src="videos/fullft_libero_subset50/near_ep42.mp4"></video><div class="cap">ep42 · near · min_eef=0.012m · lift=0.000m<br/>flags: near</div></div><div class="clip"><video controls preload="metadata" src="videos/fullft_libero_subset50/near_ep25.mp4"></video><div class="cap">ep25 · near · min_eef=0.021m · lift=0.000m<br/>flags: near</div></div><div class="clip"><video controls preload="metadata" src="videos/fullft_libero_subset50/near_ep08.mp4"></video><div class="cap">ep8 · near · min_eef=0.023m · lift=0.000m<br/>flags: near</div></div></div></section><section class="run" id="libero_fulllora_nodagger"><div class="run-head"><h3>libero FullLoRA scripted (DAggerなし)</h3><div class="sr-badge bad">0.0%</div></div><p class="meta">成功率 <strong class="bad">0.0%</strong>（0/50 成功） · init=pi05_libero · Full LoRA · dagger=none · data=scripted OSC v8 (871 ep) · steps=10000</p><table class="mini"><tbody><tr><th>成功率</th><td><code>0.0%（0/50 成功）</code></td></tr><tr><th>ckpt</th><td><code>pi05_lora_b_object_sawyer_merged_libero_init_sawyer_obj0_fulllora_s10000_scripted_obj0_osc_v8</code></td></tr><tr><th>repo / norm</th><td><code>libero_sawyer_scripted_obj0_osc_v8</code></td></tr><tr><th>eval_log</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/eval_libero_fulllora_nodagger_max1200.log</code></td></tr><tr><th>video_dir</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/videos_libero_fulllora_nodagger_max1200</code></td></tr></tbody></table><div class="grid"><div class="clip"><video controls preload="metadata" src="videos/libero_fulllora_nodagger/transport_ep38.mp4"></video><div class="cap">ep38 · transport · min_eef=0.002m · lift=0.146m<br/>flags: near, grasp, lift, transport</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_fulllora_nodagger/transport_ep08.mp4"></video><div class="cap">ep8 · transport · min_eef=0.001m · lift=0.141m<br/>flags: near, grasp, lift, transport</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_fulllora_nodagger/transport_ep14.mp4"></video><div class="cap">ep14 · transport · min_eef=0.001m · lift=0.137m<br/>flags: near, grasp, lift, transport</div></div><div class="clip"><video controls preload="metadata" src="videos/libero_fulllora_nodagger/transport_ep45.mp4"></video><div class="cap">ep45 · transport · min_eef=0.009m · lift=0.133m<br/>flags: near, grasp, lift, transport</div></div></div></section><section class="run" id="base_fulllora_scripted"><div class="run-head"><h3>base FullLoRA scripted (DAggerなし)</h3><div class="sr-badge bad">0.0%</div></div><p class="meta">成功率 <strong class="bad">0.0%</strong>（0/50 成功） · init=pi05_base · Full LoRA · dagger=none · data=scripted OSC v8 (871 ep) · steps=10000</p><table class="mini"><tbody><tr><th>成功率</th><td><code>0.0%（0/50 成功）</code></td></tr><tr><th>ckpt</th><td><code>pi05_lora_b_object_sawyer_merged_bs4_10000_scripted_obj0_osc_v8</code></td></tr><tr><th>repo / norm</th><td><code>libero_sawyer_scripted_obj0_osc_v8</code></td></tr><tr><th>eval_log</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/eval_base_fulllora_scripted_max1200.log</code></td></tr><tr><th>video_dir</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/videos_base_fulllora_scripted_max1200</code></td></tr></tbody></table><div class="grid"><div class="clip"><video controls preload="metadata" src="videos/base_fulllora_scripted/lift_ep40.mp4"></video><div class="cap">ep40 · lift · min_eef=0.001m · lift=0.165m<br/>flags: near, grasp, lift</div></div><div class="clip"><video controls preload="metadata" src="videos/base_fulllora_scripted/near_ep26.mp4"></video><div class="cap">ep26 · near · min_eef=0.006m · lift=0.000m<br/>flags: near</div></div><div class="clip"><video controls preload="metadata" src="videos/base_fulllora_scripted/near_ep27.mp4"></video><div class="cap">ep27 · near · min_eef=0.010m · lift=0.000m<br/>flags: near</div></div><div class="clip"><video controls preload="metadata" src="videos/base_fulllora_scripted/near_ep30.mp4"></video><div class="cap">ep30 · near · min_eef=0.012m · lift=0.000m<br/>flags: near</div></div></div></section><section class="run" id="base_visact_nodagger"><div class="run-head"><h3>base VisAct scripted (DAggerなし)</h3><div class="sr-badge bad">0.0%</div></div><p class="meta">成功率 <strong class="bad">0.0%</strong>（0/50 成功） · init=pi05_base · VisAct LoRA · dagger=none · data=scripted OSC v8 (871 ep) · steps=10000</p><table class="mini"><tbody><tr><th>成功率</th><td><code>0.0%（0/50 成功）</code></td></tr><tr><th>ckpt</th><td><code>pi05_lora_b_object_sawyer_merged_base_init_sawyer_obj0_visact_s10000_scripted_obj0_osc_v8</code></td></tr><tr><th>repo / norm</th><td><code>libero_sawyer_scripted_obj0_osc_v8</code></td></tr><tr><th>eval_log</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/eval_base_visact_nodagger_max1200.log</code></td></tr><tr><th>video_dir</th><td><code>/storage3/tmp/yui.muranaka/openpi_eval/videos_base_visact_nodagger_max1200</code></td></tr></tbody></table><div class="grid"><div class="clip"><video controls preload="metadata" src="videos/base_visact_nodagger/miss_ep07.mp4"></video><div class="cap">ep7 · miss · min_eef=0.053m · lift=0.000m<br/>flags: none</div></div><div class="clip"><video controls preload="metadata" src="videos/base_visact_nodagger/miss_ep35.mp4"></video><div class="cap">ep35 · miss · min_eef=0.054m · lift=0.000m<br/>flags: none</div></div><div class="clip"><video controls preload="metadata" src="videos/base_visact_nodagger/miss_ep01.mp4"></video><div class="cap">ep1 · miss · min_eef=0.061m · lift=0.000m<br/>flags: none</div></div><div class="clip"><video controls preload="metadata" src="videos/base_visact_nodagger/miss_ep06.mp4"></video><div class="cap">ep6 · miss · min_eef=0.062m · lift=0.000m<br/>flags: none</div></div></div></section>
+
+  <footer>
+    Rebuild: <code>python scripts/export_reeval_max1200_gallery.py --out docs/reeval_max1200</code>
+  </footer>
+</main>
+</body>
+</html>
