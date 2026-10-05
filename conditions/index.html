@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sawyer Task0 — 学習条件まとめ（2mm / 5mm / 1cm · open/closed loop）</title>
+  <style>
+    :root {
+      --bg: #eef2f0;
+      --ink: #1b1f1c;
+      --muted: #5c6560;
+      --line: #c9d2cc;
+      --card: #fbfcfb;
+      --ok: #0b6b45;
+      --bad: #9b1c1c;
+      --warn: #8a4b08;
+      --accent: #1f4d3a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Noto Sans JP", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 380px at 0% -10%, #d5e6dc 0%, transparent 55%),
+        radial-gradient(700px 320px at 100% 0%, #e7e0d4 0%, transparent 50%),
+        var(--bg);
+      line-height: 1.45;
+    }
+    main { max-width: 1120px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    h1 { font-size: 1.55rem; margin: 0 0 0.35rem; letter-spacing: -0.02em; }
+    h2 { font-size: 1.12rem; margin: 2rem 0 0.7rem; }
+    h3 { font-size: 1.02rem; margin: 1.25rem 0 0.45rem; }
+    p.lead { color: var(--muted); margin: 0 0 1rem; max-width: 52rem; }
+    a { color: var(--accent); }
+    .note {
+      border-left: 3px solid var(--warn);
+      background: #fff6e8;
+      padding: 0.75rem 1rem;
+      margin: 1rem 0 1.25rem;
+      color: #5a3b12;
+    }
+    .note.ok {
+      border-left-color: var(--ok);
+      background: #edf7f1;
+      color: #184833;
+    }
+    .note.bad {
+      border-left-color: var(--bad);
+      background: #fff1f1;
+      color: #5c1818;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border: 1px solid var(--line);
+      font-size: 0.86rem;
+      margin-bottom: 0.9rem;
+    }
+    th, td { padding: 0.48rem 0.5rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #e5ebe7; font-weight: 600; }
+    table.mini th { width: 10.5rem; }
+    .ok { color: var(--ok); font-weight: 700; }
+    .bad { color: var(--bad); font-weight: 700; }
+    .muted { color: var(--muted); }
+    .tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.12rem 0.4rem;
+      border: 1px solid var(--line);
+      background: #fff;
+      margin-right: 0.25rem;
+    }
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 820px) { .grid2 { grid-template-columns: 1fr; } }
+    .card {
+      border: 1px solid var(--line);
+      background: var(--card);
+      padding: 0.75rem 0.85rem;
+    }
+    .card h3 { margin-top: 0; }
+    code { font-size: 0.76rem; word-break: break-all; }
+    nav.crumb { font-size: 0.86rem; color: var(--muted); margin-bottom: 0.9rem; }
+    footer { margin-top: 2rem; color: var(--muted); font-size: 0.82rem; }
+    ul.compact { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    ul.compact li { margin: 0.2rem 0; }
+  </style>
+</head>
+<body>
+<main>
+  <nav class="crumb">
+    Sawyer appearance · Task0 学習条件 ·
+    <a href="../index.html">clean50 gallery</a> ·
+    <a href="https://github.com/kurumia-ru/openpi-clean50-gallery" title="smokeはローカルdocs参照">open/closed smoke</a> ·
+    <a href="https://github.com/kurumia-ru/openpi-clean50-gallery" title="reevalは別ギャラリー">reeval max1200</a>
+  </nav>
+
+  <h1>学習条件まとめ — 2mm / 5mm / 1cm とそのほか</h1>
+  <p class="lead">
+    Sawyer Task0（alphabet soup → basket）。先生向けの一覧。
+    精度ノイズ実験（proprio Gaussian = stategauss）と、open-loop / closed-loop の意味、
+    共通の学習・評価設定、そのほかの主要条件を1ページに整理。
+    更新: 2026-10-05。
+  </p>
+
+  <div class="note ok">
+    <strong>いちばん重要な結果:</strong>
+    clean50（きれいデモ×50）上の Full FT に学習時 state ノイズを足すと、
+    <span class="ok">5mm だけ成功率 2%（1/50）</span>。
+    2mm / ノイズなし / 5mm+action1.5mm は 0%。1cm は評価途中で中断。
+    一方 FullLoRA（ノイズなし）は <span class="ok">8%</span>。DAgger あり FullLoRA r1 は <span class="ok">38%</span>（別データ）。
+  </div>
+
+  <!-- ========== glossary ========== -->
+  <h2>1. 用語（open / closed など）</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3><span class="tag">Open-loop</span> デモ品質ゲート</h3>
+      <p class="muted" style="margin:0">
+        記録した action をそのまま再生。ポリシーは使わない。
+        export 時 <code>--require-open-loop</code> で「再生しても lift+place できるデモ」だけ残す。
+        clean50 はここに通ったデモだけ。
+      </p>
+    </div>
+    <div class="card">
+      <h3><span class="tag">Closed-loop</span> 本番評価</h3>
+      <p class="muted" style="margin:0">
+        ライブ観測 → ポリシー → <code>env.step</code>。成功率表はすべてこれ。
+        誤差が蓄積しやすいので、train で合っても closed で崩れることがある。
+      </p>
+    </div>
+    <div class="card">
+      <h3><span class="tag">Teacher-force</span> 診断</h3>
+      <p class="muted" style="margin:0">
+        デモの観測を渡して action を予測（開ループ教師強制）。
+        「学習自体はできているか」を見る。smoke 図で使用。
+      </p>
+    </div>
+    <div class="card">
+      <h3><span class="tag">Stategauss</span> 精度ノイズ</h3>
+      <p class="muted" style="margin:0">
+        学習時だけ EEF proprio（xyz / ori）に Gaussian を加算。
+        デモ本数は同じ clean50。評価時はノイズなし。
+        「状態が数 mm ずれても頑健か」を見るための摂動。
+      </p>
+    </div>
+  </div>
+
+  <table class="mini" style="margin-top:1rem"><tbody>
+    <tr><th>OSC (<code>delta_osc</code>)</th><td>学習・評価の本線コントローラ（デルタ OSC · 20 Hz）</td></tr>
+    <tr><th>IK (<code>ik_set</code>)</th><td>デモ収集時の把握ポーズ。あとで OSC に焼き直し（retrack）</td></tr>
+    <tr><th>FullLoRA / VisAct / Full FT</th><td>LoRA（vision+lang+action） / LoRA（vision+action） / 全パラメータ FT</td></tr>
+  </tbody></table>
+
+  <!-- ========== precision table ========== -->
+  <h2>2. 精度条件の比較（clean50 · Full FT · closed-loop eval）</h2>
+  <p class="lead" style="margin-top:0">
+    共通データ: <code>libero_sawyer_scripted_obj0_osc_v8_clean50</code>（open-loop 成功・approach_noise=0 · 50本）。
+    共通学習: init=<code>pi05_libero</code> · Full FT · steps=10000 · NPROC=2×BS=2（実効 BS=4）· lr peak≈5e-5。
+    共通評価: seed=7 · 50 trials · max_steps=1200 · <strong>closed-loop</strong> · 評価時ノイズなし。
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>条件</th>
+        <th>学習時ノイズ</th>
+        <th>成功率</th>
+        <th>near</th><th>grasp</th><th>lift</th><th>transport</th><th>place</th>
+        <th>メモ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>2mm</strong></td>
+        <td>xyz σ=<strong>0.002</strong> · ori σ=0.005 rad</td>
+        <td class="bad">0% (0/50)</td>
+        <td>50/50</td><td>3/50</td><td>1/50</td><td>0/50</td><td>0/50</td>
+        <td>接近は全成功。掴みはわずかに出る</td>
+      </tr>
+      <tr>
+        <td><strong>5mm</strong></td>
+        <td>xyz σ=<strong>0.005</strong> · ori σ=0.0125</td>
+        <td class="ok">2% (1/50)</td>
+        <td>31/50</td><td>3/50</td><td>3/50</td><td>2/50</td><td>1/50</td>
+        <td>Full FT clean50 系で唯一の非ゼロ</td>
+      </tr>
+      <tr>
+        <td><strong>1cm</strong></td>
+        <td>xyz σ=<strong>0.01</strong> · ori σ=0.025</td>
+        <td class="muted">未完了</td>
+        <td colspan="5" class="muted">評価 12/50 で中断（暫定 near≈8/12 · grasp 0）</td>
+        <td>学習は完了 · eval 要再開</td>
+      </tr>
+      <tr>
+        <td><strong>5mm + act 1.5mm</strong></td>
+        <td>state 5mm + action xyz σ=<strong>0.0015</strong></td>
+        <td class="bad">0% (0/50)</td>
+        <td>50/50</td><td>10/50</td><td>10/50</td><td>4/50</td><td>1/50</td>
+        <td>grasp↑ だが success は 0</td>
+      </tr>
+      <tr>
+        <td>対照: Full FT（ノイズなし）</td>
+        <td>—</td>
+        <td class="bad">0% (0/50)</td>
+        <td>50/50</td><td>0/50</td><td>0/50</td><td>0/50</td><td>0/50</td>
+        <td>接近のみ · 掴み全滅</td>
+      </tr>
+      <tr>
+        <td>対照: FullLoRA（ノイズなし）</td>
+        <td>—</td>
+        <td class="ok">8% (4/50)</td>
+        <td>50/50</td><td>18/50</td><td>18/50</td><td>18/50</td><td>7/50</td>
+        <td>同じ clean50 で最も良い</td>
+      </tr>
+      <tr>
+        <td>対照: VisAct（ノイズなし）</td>
+        <td>—</td>
+        <td class="bad">0% (0/50)</td>
+        <td>40/50</td><td>7/50</td><td>5/50</td><td>5/50</td><td>1/50</td>
+        <td>place 手前で終了しやすい</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>読み方:</strong> ノイズは「デモを汚す」のではなく、学習中の proprio 入力をわずかに揺らす。
+    評価は常にノイズなし closed-loop。
+    5mm で初めて成功が出た一方、action 側にもノイズを足すと success は消えて grasp だけ増える →
+    「どのチャネルをどれだけ揺らすか」が効いている。
+  </div>
+
+  <!-- ========== shared train/eval ========== -->
+  <h2>3. 共通の学習・評価設定</h2>
+  <table class="mini"><tbody>
+    <tr><th>robot / task</th><td>Sawyer · libero_object task0（soup → basket）</td></tr>
+    <tr><th>control</th><td>delta OSC · 20 Hz · home_w30</td></tr>
+    <tr><th>config</th><td><code>pi05_lora_b_object_sawyer</code>（Full FT 時は freeze なし）</td></tr>
+    <tr><th>init</th><td><code>pi05_libero_pytorch</code>（上表の clean50 系）</td></tr>
+    <tr><th>Full FT batch</th><td>2 GPU × BS 2 = 実効 4（誤設定だった 1GPU×BS2 は廃止）</td></tr>
+    <tr><th>LoRA batch</th><td>1 GPU × BS 4</td></tr>
+    <tr><th>steps</th><td>10000（旧 Full FT 誤設定の 5000 は比較から除外推奨）</td></tr>
+    <tr><th>lr</th><td>peak ≈ 5e-5（warmup あり）</td></tr>
+    <tr><th>eval</th><td>closed-loop · seed=7 · 50 trials · max_steps=1200 · env_horizon=1260</td></tr>
+    <tr><th>成功判定</th><td>lift≥8cm · transport≥8cm · place_near≤5cm（詳細は eval スクリプト）</td></tr>
+  </tbody></table>
+
+  <!-- ========== data ========== -->
+  <h2>4. データの作り方（open-loop の位置づけ）</h2>
+  <table>
+    <thead>
+      <tr><th>データ</th><th>approach noise</th><th>本数</th><th>open-loop</th><th>用途</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>…osc_v8_clean50</code></td>
+        <td><strong>0</strong></td>
+        <td>50</td>
+        <td>必須（120試行→OL ok 106→先頭50）</td>
+        <td>精度ノイズ実験・clean50 比較の本線</td>
+      </tr>
+      <tr>
+        <td><code>…osc_v8</code>（本流）</td>
+        <td>≈1.5cm ×3</td>
+        <td>~871</td>
+        <td>必須</td>
+        <td>DAgger 前の scripted 大セット</td>
+      </tr>
+      <tr>
+        <td>DAgger 合流（r1/r2 等）</td>
+        <td>（scripted 継承）+ takeover</td>
+        <td>~1.3k–1.7k</td>
+        <td>expert 成功必須</td>
+        <td>student は closed-loop → 失敗付近で OSC expert</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ul class="compact">
+    <li>デモ収集: scripted · grasp=<code>ik_set</code> · path_step≈8mm · その後 OSC retrack</li>
+    <li>「open-loop」はデータ品質フィルタ。「closed-loop」はポリシー評価と DAgger student</li>
+  </ul>
+
+  <!-- ========== open/closed smoke ========== -->
+  <h2>5. Open-loop / Closed-loop 診断（smoke）</h2>
+  <p class="lead" style="margin-top:0">
+    同じ clean50 デモ ep0 で、teacher-force / open-loop 再生 / closed-loop を比較した診断。
+    成功率ではなく「どこでデモから外れるか」。詳細図は
+    <a href="https://github.com/kurumia-ru/openpi-clean50-gallery" title="smokeはローカルdocs参照">clean50_smoke</a>。
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>モデル</th>
+        <th>open-loop 再生 EEF 誤差</th>
+        <th>closed vs open EEF 誤差</th>
+        <th>teacher-force action L2</th>
+        <th>verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Full FT（ノイズなし）</td>
+        <td>≈0</td>
+        <td>≈0.120</td>
+        <td>≈0.204</td>
+        <td class="bad">OL ok · CL weak</td>
+      </tr>
+      <tr>
+        <td>FullLoRA</td>
+        <td>≈0</td>
+        <td>≈0.048</td>
+        <td>≈0.125</td>
+        <td class="ok">OL/CL ともに比較的健全</td>
+      </tr>
+      <tr>
+        <td>stategauss 5mm</td>
+        <td>≈0</td>
+        <td>≈0.074</td>
+        <td>≈0.173</td>
+        <td class="bad">OL ok · CL weak（改善は限定的）</td>
+      </tr>
+      <tr>
+        <td>5mm + act 1.5mm</td>
+        <td>≈0</td>
+        <td>≈0.051</td>
+        <td>≈0.259</td>
+        <td class="bad">OL ok · CL weak · TF は悪化</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note bad">
+    デモ再生（open-loop）はどの条件でもほぼ誤差ゼロ → データ自体は健全。
+    Full FT 系は closed-loop で接近後〜掴み付近から外れる、というのが共通の失敗モード。
+  </div>
+
+  <!-- ========== others ========== -->
+  <h2>6. そのほかの主要条件（reeval max1200）</h2>
+  <p class="lead" style="margin-top:0">
+    osc_v8（~871）± DAgger。評価は同じ closed-loop · max_steps=1200 · 50 trials。
+    詳細・動画: <a href="https://github.com/kurumia-ru/openpi-clean50-gallery" title="reevalは別ギャラリー">reeval_max1200</a>。
+  </p>
+  <table>
+    <thead>
+      <tr><th>条件</th><th>method</th><th>data</th><th>steps</th><th>成功率</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>libero FullLoRA DAgger r1</td><td>FullLoRA</td><td>scripted + DAgger r1</td><td>10k</td><td class="ok">38%</td></tr>
+      <tr><td>libero FullLoRA DAgger r2</td><td>FullLoRA</td><td>+ r2</td><td>10k</td><td class="ok">30%</td></tr>
+      <tr><td>libero VisAct DAgger r2</td><td>VisAct</td><td>+ r2</td><td>10k</td><td class="ok">26%</td></tr>
+      <tr><td>base FullLoRA closefail_v2</td><td>FullLoRA</td><td>closefail dagger</td><td>10k</td><td class="ok">22%</td></tr>
+      <tr><td>libero VisAct DAgger r1</td><td>VisAct</td><td>+ r1</td><td>10k</td><td class="ok">8%</td></tr>
+      <tr><td>libero VisAct scripted</td><td>VisAct</td><td>osc_v8 871</td><td>10k</td><td class="bad">4%</td></tr>
+      <tr><td>libero FullLoRA scripted</td><td>FullLoRA</td><td>osc_v8 871</td><td>10k</td><td class="bad">0%</td></tr>
+      <tr><td>libero Full FT subset50</td><td>Full FT</td><td>osc_v8 先頭50</td><td>5k</td><td class="bad">0%</td></tr>
+    </tbody>
+  </table>
+
+  <h2>7. 関連ページ</h2>
+  <ul class="compact">
+    <li><a href="../index.html">clean50 gallery</a> — FullLoRA / VisAct / Full FT の動画つき結果</li>
+    <li><a href="https://github.com/kurumia-ru/openpi-clean50-gallery" title="smokeはローカルdocs参照">clean50 smoke</a> — open/closed/teacher-force の軌跡図</li>
+    <li><a href="https://github.com/kurumia-ru/openpi-clean50-gallery" title="reevalは別ギャラリー">reeval max1200</a> — DAgger 含む12条件の正式 SR</li>
+  </ul>
+
+  <footer>
+    ローカル: <code>docs/train_conditions/index.html</code> ·
+    スクリプト: <code>run_clean50_libero_fullft_stategauss.sh</code> ·
+    データ/ログ: <code>/share7/yui.muranaka/openpi_appearance</code>
+  </footer>
+</main>
+</body>
+</html>
