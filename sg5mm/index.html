@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>stategauss 5mm 報告用動画</title>
+  <style>
+    :root { --bg:#f7f5f1; --ink:#1a1a1a; --muted:#666; --line:#ddd; --ok:#1a7f37; --bad:#b42318; }
+    body { margin:0; font-family: "Hiragino Sans", "Noto Sans JP", sans-serif; background:var(--bg); color:var(--ink); }
+    main { max-width: 980px; margin: 0 auto; padding: 1.5rem 1.2rem 3rem; }
+    h1 { font-size: 1.45rem; margin: 0 0 .4rem; }
+    .lead { color: var(--muted); line-height: 1.55; }
+    table { width:100%; border-collapse: collapse; margin: 1rem 0 1.5rem; background:#fff; }
+    th, td { border:1px solid var(--line); padding:.55rem .65rem; text-align:left; font-size:.92rem; }
+    th { background:#f0eee8; }
+    .ok { color: var(--ok); font-weight: 600; }
+    .bad { color: var(--bad); font-weight: 600; }
+    .grid { display:grid; gap:1rem; grid-template-columns:1fr; }
+    @media(min-width:720px){ .grid { grid-template-columns:1fr 1fr; } }
+    .clip { background:#fff; border:1px solid var(--line); padding:.6rem; }
+    video { width:100%; display:block; background:#111; aspect-ratio:16/10; }
+    .cap { font-size:.85rem; margin-top:.4rem; color:var(--muted); line-height:1.4; }
+    nav a { color:#0b57d0; }
+  </style>
+</head>
+<body>
+<main>
+  <nav><a href="../conditions/">← 学習条件まとめ</a></nav>
+  <h1>Full FT + stategauss 5mm — 報告用動画</h1>
+  <p class="lead">学習時 state ノイズ xyz σ=5mm。評価はノイズなし closed-loop（max_steps=1200）。2026-10-07 完了。</p>
+
+  <table>
+    <thead><tr><th>条件</th><th>成功率</th><th>メモ</th></tr></thead>
+    <tbody>
+      <tr><td>clean50 · 標準 eval</td><td class="ok">2% (1/50)</td><td>唯一の成功 = ep20</td></tr>
+      <tr><td>clean50 · 学習init</td><td class="bad">0% (0/50)</td><td>transport 3 / place 0</td></tr>
+      <tr><td>clean100 · 標準</td><td class="bad">0% (0/50)</td><td>place_near 1</td></tr>
+      <tr><td>clean100 · 学習init</td><td class="bad">0% (0/100)</td><td>grasp 22 · place_near 3 · success 0</td></tr>
+    </tbody>
+  </table>
+
+  <div class="grid">
+    <div class="clip"><video controls preload="metadata" src="clean50_5mm_std_SUCCESS_ep20.mp4"></video><div class="cap"><strong>唯一の成功</strong> · clean50 5mm 標準 · ep20</div></div>
+    <div class="clip"><video controls preload="metadata" src="clean50_5mm_std_transport_ep28.mp4"></video><div class="cap">標準 · transport まで · place 失敗 · ep28</div></div>
+    <div class="clip"><video controls preload="metadata" src="clean50_5mm_traininit_transport_ep14_init15.mp4"></video><div class="cap"><strong>学習init</strong> · transport · place 失敗 · ep14 init15</div></div>
+    <div class="clip"><video controls preload="metadata" src="clean50_5mm_traininit_transport_ep27_init32.mp4"></video><div class="cap"><strong>学習init</strong> · transport · place 失敗 · ep27 init32</div></div>
+    <div class="clip"><video controls preload="metadata" src="clean100_5mm_traininit_place_near_ep54_init11.mp4"></video><div class="cap"><strong>clean100 学習init</strong> · place_near だが success ならず · ep54</div></div>
+    <div class="clip"><video controls preload="metadata" src="clean100_5mm_traininit_place_near_ep67_init28.mp4"></video><div class="cap"><strong>clean100 学習init</strong> · place_near · ep67</div></div>
+    <div class="clip"><video controls preload="metadata" src="clean100_5mm_std_place_near_ep13.mp4"></video><div class="cap">clean100 標準 · place_near · ep13</div></div>
+  </div>
+</main>
+</body>
+</html>
