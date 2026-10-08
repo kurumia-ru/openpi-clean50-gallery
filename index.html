@@ -111,7 +111,9 @@
     <strong>結論:</strong> 同じ成功デモ clean50・同じ学習予算（step=10000 · effbs=4）でも
     <span class="ok">FullLoRA だけ 8%</span>。VisAct / Full FT は 0%。
     Full FT は近傍到達（near）は 50/50 だが <strong>grasp は 0/50</strong> → 失敗デモ学習ではなく掴み以降が破綻。
-    デモ vs ポリシー診断図 → <a href="#">clean50_smoke</a>。
+    追記（2026-10-07）: Full FT + stategauss <strong>5mm</strong> は標準 eval で <span class="ok">2%</span>、
+    学習init / clean100+5mm はいずれも <span class="bad">0%</span>
+    → 詳細は <a href="conditions/index.html">学習条件まとめ</a>。
   </div>
 
   <h2>結果サマリ</h2>
