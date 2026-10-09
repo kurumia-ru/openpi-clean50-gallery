@@ -113,9 +113,10 @@
   <div class="note ok">
     <strong>いちばん重要な結果:</strong>
     clean50 Full FT + state ノイズでは <span class="ok">5mm だけ標準評価で 2%（1/50）</span>。
-    同じ 5mm ckpt を<strong>学習 init</strong>で測ると <span class="bad">0%</span>（near 38/50 · grasp 4）。
-    データ倍の <strong>clean100 + 5mm</strong> も標準・学習initとも <span class="bad">0%</span>
-    （ただし学習initでは grasp 22/100 まで上がる）。成功率そのものは増えなかった。
+    同じ 5mm ckpt を<strong>学習デモと同じ初期配置</strong>で測ると <span class="bad">0%</span>（near 38/50 · grasp 4）。
+    データ倍の <strong>clean100 + 5mm</strong> も標準・学習デモ初期配置とも <span class="bad">0%</span>
+    （ただし学習デモ初期では grasp 22/100 まで上がる）。成功率そのものは増えなかった。
+    <br/><span class="muted">注: 「学習デモ初期配置」はデモ再生ではなく closed-loop 評価。デモ自体は open-loop 全成功・Gauss なし。Gauss は学習時 proprio のみ。</span>
   </div>
 
   <!-- ========== glossary ========== -->
@@ -193,25 +194,25 @@
         <td>Full FT clean50 系で唯一の非ゼロ</td>
       </tr>
       <tr>
-        <td><strong>5mm · 学習init</strong></td>
-        <td>同上（評価は train demo の init、%50 wrap）</td>
+        <td><strong>5mm · 学習デモ初期配置</strong></td>
+        <td>同上（評価は train demo の init · ノイズなし closed-loop）</td>
         <td class="bad">0% (0/50)</td>
         <td>38/50</td><td>4/50</td><td>3/50</td><td>3/50</td><td>0/50</td>
-        <td>学習分布でも success 0 · near/grasp は標準より少し良い</td>
+        <td>デモ再生ではない · 学習分布でも success 0</td>
       </tr>
       <tr>
         <td><strong>5mm · clean100</strong>（標準 0–49）</td>
-        <td>同上 · デモ 100本</td>
+        <td>同上 · デモ 100本（いずれも open-loop 成功）</td>
         <td class="bad">0% (0/50)</td>
         <td>47/50</td><td>4/50</td><td>3/50</td><td>1/50</td><td>1/50</td>
         <td>データ倍でも SR 上がらず（baseline 2% を下回る）</td>
       </tr>
       <tr>
-        <td><strong>5mm · clean100 · 学習init</strong></td>
-        <td>同上 · 100 inits</td>
+        <td><strong>5mm · clean100 · 学習デモ初期配置</strong></td>
+        <td>同上 · 100 inits · 評価時ノイズなし</td>
         <td class="bad">0% (0/100)</td>
         <td>97/100</td><td>22/100</td><td>17/100</td><td>10/100</td><td>3/100</td>
-        <td>grasp/lift は明確に改善 · place/success は出ず</td>
+        <td>grasp/lift は改善 · place/success は出ず</td>
       </tr>
       <tr>
         <td><strong>1cm</strong></td>
@@ -255,8 +256,9 @@
     <strong>読み方:</strong> ノイズは「デモを汚す」のではなく、学習中の proprio 入力をわずかに揺らす。
     評価は常にノイズなし closed-loop。
     5mm で初めて成功が出た一方、action 側にもノイズを足すと success は消えて grasp だけ増える。
-    <strong>学習init評価 / clean100</strong>（2026-10-07 完了）: データ量を倍にしても success は 0% のまま。
-    学習分布では接近〜掴みは改善するが place まで届かない → 「ep 数不足」より下流制御/リリース側の線が強い。
+    <strong>学習デモ初期配置での評価 / clean100</strong>（2026-10-07 完了）: データ量を倍にしても success は 0% のまま。
+    学習デモの初期配置でも接近〜掴みは改善するが place まで届かない → 「ep 数不足」より下流制御/リリース側の線が強い。
+    学習デモ自体（open-loop）は全成功。Gauss は学習時のみ。
   </div>
 
   <!-- ========== shared train/eval ========== -->
@@ -369,7 +371,6 @@
   <p class="lead" style="margin-top:0">
     osc_v8（~871）± DAgger。評価は同じ closed-loop · max_steps=1200 · 50 trials。
     詳細・動画: <a href="../reeval/index.html">reeval_max1200</a>。
-    stategauss 5mm（学習init / clean100）報告クリップ: <a href="../sg5mm/index.html">sg5mm videos</a>。
   </p>
   <table>
     <thead>
