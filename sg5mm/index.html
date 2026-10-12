@@ -25,7 +25,7 @@
 </head>
 <body>
 <main>
-  <nav><a href="../conditions/">← 学習条件まとめ</a></nav>
+  <nav><a href="../conditions/">← 学習条件まとめ</a> · <a href="../sg5mm_s20k/">clean100 · 20k</a></nav>
   <h1>Full FT + stategauss 5mm — 報告用動画</h1>
   <p class="lead">学習時 state ノイズ xyz σ=5mm。評価はノイズなし closed-loop（max_steps=1200）。2026-10-07 完了。<br/>「学習デモ初期配置」= 学習デモと同じ初期状態からポリシーを closed-loop 評価（デモ再生ではない）。デモ自体は open-loop 全成功。Gauss は学習時 proprio のみ。</p>
 
@@ -48,6 +48,7 @@
     <div class="clip"><video controls preload="metadata" src="clean100_5mm_traininit_place_near_ep67_init28.mp4"></video><div class="cap"><strong>clean100 学習デモ初期配置</strong> · place_near · ep67</div></div>
     <div class="clip"><video controls preload="metadata" src="clean100_5mm_std_place_near_ep13.mp4"></video><div class="cap">clean100 標準 · place_near · ep13</div></div>
   </div>
+  <p class="lead">追記: steps 2倍（clean100 · 20k）→ <a href="../sg5mm_s20k/">sg5mm_s20k</a>（success は依然 0%）。</p>
 </main>
 </body>
 </html>
