@@ -47,12 +47,12 @@
     学習 step を従来の 2 倍（10000→20000）にした追加実験。2026-10-11 完了。
     <br/>「clean」= デモ品質（open-loop 成功・approach_noise=0）。
     「Gauss」= 学習時のみ EEF proprio に加算（評価時はノイズなし）。
-    「学習デモ初期配置」= デモ再生ではなく、学習デモと同じ初期状態からの closed-loop 評価。
+    評価はどれも <strong>closed-loop</strong>（その場の観測を見てポリシーが action を出す）。「標準」= 決め打ちの初期配置（init 0–49）。「学習と同じ初期状態」= 学習デモに出てきた物体の置き方からスタートして closed-loop で動かす（デモの再生＝open-loop ではない。学習データのオフライン推論でもない）。
   </p>
 
   <div class="note">
     <strong>結論:</strong> steps を倍にしても success は <span class="bad">0%</span>。
-    標準・学習デモ初期配置とも place まで届かない。
+    標準・学習と同じ初期状態とも place まで届かない。
     10k 時点の clean100（学習デモ初期で grasp 22/100）より中間指標も悪化 → 「長く学習すれば上がる」線は弱い。
   </div>
 
@@ -93,7 +93,7 @@
         <td>7/50</td><td>1/50</td><td>1/50</td><td>1/50</td><td>0/50</td>
       </tr>
       <tr>
-        <td>clean100 · 5mm · <strong>20k</strong> · 学習デモ初期配置</td>
+        <td>clean100 · 5mm · <strong>20k</strong> · 学習と同じ初期状態</td>
         <td class="bad">0% (0/100)</td>
         <td>10/100</td><td>1/100</td><td>1/100</td><td>1/100</td><td>0/100</td>
       </tr>
@@ -112,7 +112,7 @@
         <td>Full FT clean 系で唯一の非ゼロ（ep20）</td>
       </tr>
       <tr>
-        <td>clean50 · 5mm · 学習デモ初期配置</td><td>10k</td>
+        <td>clean50 · 5mm · 学習と同じ初期状態</td><td>10k</td>
         <td class="bad">0% (0/50)</td>
         <td>transport 3 / place 0</td>
       </tr>
@@ -122,7 +122,7 @@
         <td>place_near 1</td>
       </tr>
       <tr>
-        <td>clean100 · 5mm · 学習デモ初期配置</td><td>10k</td>
+        <td>clean100 · 5mm · 学習と同じ初期状態</td><td>10k</td>
         <td class="bad">0% (0/100)</td>
         <td>grasp 22 · place_near 3 · success 0</td>
       </tr>
@@ -137,7 +137,7 @@
 
   <h2>5. 報告用動画（20k）</h2>
   <p class="lead" style="margin-top:0">
-    success は 0 本。標準・学習デモ初期配置で最も進んだエピソード（transport）と、接近止まりの例。
+    success は 0 本。標準・学習と同じ初期状態で最も進んだエピソード（transport）と、接近止まりの例。
   </p>
   <div class="grid">
     <div class="clip">
@@ -150,11 +150,11 @@
     </div>
     <div class="clip">
       <video controls preload="metadata" src="clean100_s20k_traininit_transport_ep29_init34.mp4"></video>
-      <div class="cap"><strong>学習デモ初期配置</strong> · 最良 · transport · place 失敗 · ep29 init34 · lift=0.128</div>
+      <div class="cap"><strong>学習と同じ初期状態</strong> · 最良 · transport · place 失敗 · ep29 init34 · lift=0.128</div>
     </div>
     <div class="clip">
       <video controls preload="metadata" src="clean100_s20k_traininit_near_ep46_init2.mp4"></video>
-      <div class="cap">学習デモ初期配置 · near 止まり · ep46 init2</div>
+      <div class="cap">学習と同じ初期状態 · near 止まり · ep46 init2</div>
     </div>
   </div>
 
