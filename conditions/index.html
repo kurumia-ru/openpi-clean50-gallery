@@ -115,10 +115,10 @@
     clean50 Full FT + state ノイズでは <span class="ok">5mm だけ標準評価で 2%（1/50）</span>。
     同じ 5mm ckpt を<strong>学習デモと同じ初期配置</strong>で測ると <span class="bad">0%</span>（near 38/50 · grasp 4）。
     データ倍の <strong>clean100 + 5mm · 10k</strong> も標準・学習と同じ初期状態とも <span class="bad">0%</span>
-    （学習デモ初期では grasp 22/100 まで改善）。
+    （学習と同じ初期状態では grasp 22/100 まで改善）。
     さらに steps を倍にした <strong>clean100 + 5mm · 20k</strong> も success <span class="bad">0%</span>
-    （中間指標も 10k より悪化）→ 詳細・動画: <a href="../sg5mm_s20k/index.html">sg5mm_s20k</a>。
-    <br/><span class="muted">注: 評価はすべて closed-loop。「学習と同じ初期状態」= 学習デモに出てきた置き方からスタートしてポリシーを動かす（デモ再生＝open-loop ではない）。デモ自体は open-loop 全成功。Gauss は学習時 proprio のみ。</span>
+    （中間指標も 10k より悪化）→ 詳細・動画: <a href="../sg5mm_s20k/">sg5mm_s20k</a>。
+    <br/><span class="muted">注: 評価はすべて closed-loop。デモ自体は open-loop 全成功。Gauss は学習時 proprio のみ。下の「評価のちがい」も参照。</span>
   </div>
 
   <!-- ========== glossary ========== -->
@@ -135,8 +135,8 @@
     <div class="card">
       <h3><span class="tag">Closed-loop</span> 本番評価</h3>
       <p class="muted" style="margin:0">
-        ライブ観測 → ポリシー → <code>env.step</code>。成功率表はすべてこれ。
-        誤差が蓄積しやすいので、train で合っても closed で崩れることがある。
+        その場の観測 → ポリシー → action → 環境。成功率表はすべてこれ。
+        「うまくいく保証」ではない。少しズレると誤差が積み上がって失敗する。
       </p>
     </div>
     <div class="card">
@@ -155,6 +155,52 @@
       </p>
     </div>
   </div>
+
+  <h3 style="margin:1.25rem 0 .5rem; font-size:1rem;">評価のちがい（標準 vs 学習と同じ初期状態）</h3>
+  <p class="muted" style="margin:0 0 .6rem">
+    どちらも<strong>同じ closed-loop 推論</strong>。違うのはスタート時の物体の置き方だけ。
+    「学習データでオフライン推論した」「デモを再生した」ではない（デバッグ用の対照実験）。
+  </p>
+  <table class="mini">
+    <thead>
+      <tr>
+        <th></th>
+        <th>標準評価</th>
+        <th>学習と同じ初期状態</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>推論のやり方</th>
+        <td>closed-loop（同じ）</td>
+        <td>closed-loop（同じ）</td>
+      </tr>
+      <tr>
+        <th>初期配置</th>
+        <td>決め打ち <code>init 0,1,…,49</code></td>
+        <td>学習デモに記録された置き方</td>
+      </tr>
+      <tr>
+        <th>学習デモとの関係</th>
+        <td><strong>同じではない</strong></td>
+        <td>デモと同じスタートから測る</td>
+      </tr>
+      <tr>
+        <th>デモの作り方（参考）</th>
+        <td>—</td>
+        <td>最大 120 init を試し、open-loop 成功した先頭 N 本（失敗は飛ばす）</td>
+      </tr>
+      <tr>
+        <th>何がわかるか</th>
+        <td>いつものベンチ</td>
+        <td>「学習で見た置き方なら動くか」（初期配置シフトの切り分け）</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="muted" style="margin:.5rem 0 0">
+    読み方: 学習と同じ初期状態でも success 0% → 「評価用 init が難しいだけ」ではない。
+    途中まで行って place で落ちる → 方策自体（特に置く・離す）が弱い、という線が強い。
+  </p>
 
   <table class="mini" style="margin-top:1rem"><tbody>
     <tr><th>OSC (<code>delta_osc</code>)</th><td>学習・評価の本線コントローラ（デルタ OSC · 20 Hz）</td></tr>
@@ -228,7 +274,7 @@
         <td>同上 · 100 inits · steps=20000</td>
         <td class="bad">0% (0/100)</td>
         <td>10/100</td><td>1/100</td><td>1/100</td><td>1/100</td><td>0/100</td>
-        <td>動画・Wandb: <a href="../sg5mm_s20k/index.html">sg5mm_s20k</a></td>
+        <td>動画・Wandb: <a href="../sg5mm_s20k/">sg5mm_s20k</a></td>
       </tr>
       <tr>
         <td><strong>1cm</strong></td>

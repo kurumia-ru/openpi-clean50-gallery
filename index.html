@@ -97,8 +97,9 @@
 <body>
 <main>
   <nav class="crumb" style="font-size:0.86rem;color:#5c6560;margin-bottom:0.9rem">
-    <a href="conditions/index.html">学習条件まとめ（2mm/5mm/1cm · open/closed）</a>
-    · <a href="smoke/index.html">smoke</a> · <a href="reeval/index.html">reeval max1200 (DAgger)</a>
+    <a href="conditions/">学習条件まとめ（2mm/5mm/1cm · open/closed）</a>
+    · <a href="smoke/">smoke</a>
+    · <a href="reeval/">reeval</a>
   </nav>
   <h1>clean50 — noise=0 デモ×50</h1>
   <p class="lead">
@@ -112,8 +113,9 @@
     <span class="ok">FullLoRA だけ 8%</span>。VisAct / Full FT は 0%。
     Full FT は近傍到達（near）は 50/50 だが <strong>grasp は 0/50</strong> → 失敗デモ学習ではなく掴み以降が破綻。
     追記（2026-10-07）: Full FT + stategauss <strong>5mm</strong> は標準 eval で <span class="ok">2%</span>、
-    学習init / clean100+5mm はいずれも <span class="bad">0%</span>
-    → 詳細は <a href="conditions/index.html">学習条件まとめ</a>。
+    学習と同じ初期状態 / clean100+5mm はいずれも <span class="bad">0%</span>
+    → 詳細は <a href="conditions/">学習条件まとめ</a>。
+    <br/><span class="muted">「標準」と「学習と同じ初期状態」はどちらも closed-loop。違うのは初期配置だけ（標準は init 0–49 で学習デモと同じではない）。</span>
   </div>
 
   <h2>結果サマリ</h2>
@@ -186,7 +188,7 @@
     <strong>Full FT（s10000 · effbs4 · 2026-09-26）:</strong>
     LoRA と同じ学習予算・同じ成功デモでも成功率は <strong>0%</strong>。
     near=50/50 · grasp/lift/transport/place=0 → データの成否ではなく Full FT 側（レシピ / 制御 / 過適応など）を疑う。
-    診断図: <a href="#">Full FT vs FullLoRA smoke</a>。
+    診断図: <a href="smoke/">Full FT vs FullLoRA smoke</a>。
   </div>
 
   <h2>条件別・動画</h2>
@@ -255,7 +257,7 @@
       <tr><th>ckpt</th><td><code>…/libero_init_sawyer_obj0_fullft_s10000_clean50_effbs4/10000</code></td></tr>
       <tr><th>eval_log</th><td><code>logs/clean50_libero/eval_clean50_libero_fullft_s10000_effbs4_max1200.log</code></td></tr>
       <tr><th>data</th><td>VisAct/FullLoRA と同じ open-loop 成功50本</td></tr>
-      <tr><th>smoke</th><td><a href="#">デモ vs ポリシー比較図</a></td></tr>
+      <tr><th>smoke</th><td><a href="smoke/">デモ vs ポリシー比較図</a></td></tr>
     </tbody></table>
     <div class="grid">
       <div class="clip"><video controls preload="metadata" src="videos/fullft/rollout_sawyer_task0_ep0.mp4"></video><div class="cap">ep0 · near まで（grasp 失敗）</div></div>
