@@ -65,11 +65,20 @@
       <tr><th>学習</th><td>Full FT · steps=<strong>20000</strong> · NPROC=2 × BS=2（実効 BS=4）· lr peak≈5e-5</td></tr>
       <tr><th>stategauss（学習時のみ）</th><td>xyz σ=<strong>0.005</strong>（5mm）· ori σ=0.0125 rad · grip/action ノイズなし</td></tr>
       <tr><th>評価</th><td>closed-loop · seed=7 · max_steps=1200 · 評価時ノイズなし</td></tr>
-      <tr><th>Wandb</th><td><a href="https://wandb.ai/kurumia-ru-personal/openpi/runs/8via7a68">run 8via7a68</a>（正式完走）</td></tr>
+      <tr><th>Wandb</th><td>run <code>8via7a68</code>（個人プロジェクトのため外部からは見られない可能性あり → 下に曲線を転載）</td></tr>
     </tbody>
   </table>
 
-  <h2>2. 結果</h2>
+  <h2>2. 学習曲線（Wandb から転載）</h2>
+  <p class="lead" style="margin-top:0">
+    正式完走 run の loss / learning rate / grad norm。ログイン不要でこのページだけで確認できます。
+  </p>
+  <div class="clip" style="margin-bottom:1rem">
+    <img src="train_curves.png" alt="training curves loss lr grad_norm" style="width:100%; display:block; background:#fff;" />
+    <div class="cap">steps 0–20000 · loss は低下して収束寄り · 成功率は 0% のまま</div>
+  </div>
+
+  <h2>3. 結果</h2>
   <table>
     <thead>
       <tr>
@@ -91,7 +100,7 @@
     </tbody>
   </table>
 
-  <h2>3. これまでの関連結果との比較</h2>
+  <h2>4. これまでの関連結果との比較</h2>
   <table>
     <thead>
       <tr><th>条件</th><th>steps</th><th>成功率</th><th>メモ</th></tr>
@@ -126,7 +135,7 @@
   </table>
   <p class="muted">10k 系の動画・表: <a href="../sg5mm/">sg5mm（10k）</a> · <a href="../conditions/">学習条件まとめ</a></p>
 
-  <h2>4. 報告用動画（20k）</h2>
+  <h2>5. 報告用動画（20k）</h2>
   <p class="lead" style="margin-top:0">
     success は 0 本。標準・学習デモ初期配置で最も進んだエピソード（transport）と、接近止まりの例。
   </p>
@@ -149,9 +158,9 @@
     </div>
   </div>
 
-  <h2>5. リンク</h2>
+  <h2>6. リンク</h2>
   <ul class="compact">
-    <li>Wandb（学習曲線）: <a href="https://wandb.ai/kurumia-ru-personal/openpi/runs/8via7a68">https://wandb.ai/kurumia-ru-personal/openpi/runs/8via7a68</a></li>
+    <li>学習曲線: このページ上部（Wandb は個人プロジェクトで先生側から見えない場合あり）</li>
     <li>5mm · 10k 報告: <a href="../sg5mm/">sg5mm</a></li>
     <li>条件一覧: <a href="../conditions/">train conditions</a></li>
   </ul>
