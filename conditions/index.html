@@ -107,7 +107,7 @@
     Sawyer Task0（alphabet soup → basket）。先生向けの一覧。
     精度ノイズ実験（proprio Gaussian = stategauss）と、open-loop / closed-loop の意味、
     共通の学習・評価設定、そのほかの主要条件を1ページに整理。
-    更新: 2026-10-12（clean100 · 5mm · steps 20k 追記）。
+    更新: 2026-10-16（actnoise50 追記）。
   </p>
 
   <div class="note ok">
@@ -118,7 +118,9 @@
     （学習と同じ初期状態では grasp 22/100 まで改善）。
     さらに steps を倍にした <strong>clean100 + 5mm · 20k</strong> も success <span class="bad">0%</span>
     （中間指標も 10k より悪化）→ 詳細・動画: <a href="../sg5mm_s20k/">sg5mm_s20k</a>。
-    <br/><span class="muted">注: 評価はすべて closed-loop。デモ自体は open-loop 全成功。Gauss は学習時 proprio のみ。下の「評価のちがい」も参照。</span>
+    <br/>追記: <strong>actnoise50</strong>（action Gaussian + open-loop 成功のみ）Full FT も標準 eval <span class="bad">0%</span>（near 50 · grasp 2）→
+    <a href="../actnoise50/">actnoise50</a>。
+    <br/><span class="muted">注: 評価はすべて closed-loop。デモ自体は open-loop 全成功。Gauss は学習時 proprio のみ（actnoise はデモ側 action）。下の「評価のちがい」も参照。</span>
   </div>
 
   <!-- ========== glossary ========== -->
@@ -452,6 +454,7 @@
 
   <h2>7. 関連ページ</h2>
   <ul class="compact">
+    <li><a href="../actnoise50/">actnoise50</a> — action Gaussian + 成功デモのみ · Full FT（動画・曲線）</li>
     <li><a href="../index.html">clean50 gallery</a> — FullLoRA / VisAct / Full FT の動画つき結果</li>
     <li><a href="../smoke/index.html">clean50 smoke</a> — open/closed/teacher-force の軌跡図</li>
     <li><a href="../reeval/index.html">reeval max1200</a> — DAgger 含む12条件の正式 SR</li>
